@@ -15,6 +15,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import com.example.myapplication.Login.LoginActivity
 import com.example.myapplication.R
 import com.example.myapplication.ShoppingCart.ShoppingCartActivity
+import com.example.myapplication.Utils.NetWorkConnection
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -37,7 +38,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         this.context = this
-        checkNetWorkStatus()
+        NetWorkConnection.checkNetWorkStatus(this)
         mAuth = FirebaseAuth.getInstance()
 
         val navigationView_header = navigationView.getHeaderView(0)
@@ -83,22 +84,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         Handler().postDelayed({
             backPress = false
         }, 2000)*/
-    }
-
-
-    private fun checkNetWorkStatus()  {
-        // var isWifiConn: Boolean = false
-        // var isMobileConn: Boolean = false
-
-        val connMgr =
-            context!!.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val activeNetwork = connMgr.activeNetwork
-        //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        if (activeNetwork != null) {
-           // Toast.makeText(this, "Connected", Toast.LENGTH_SHORT).show()
-        } else {
-            Toast.makeText(this, "No Network Connection", Toast.LENGTH_LONG).show()
-        }
     }
 
     override fun onResume() {

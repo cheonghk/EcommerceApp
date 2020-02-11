@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginHorizontal="50dp"
+    android:layout_marginVertical="150dp"
+    tools:context=".Category.ProductImageSlideFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imageview_categorydialog_large"
+            android:layout_width="400dp"
+            android:layout_height="400dp"
+            android:layout_gravity="center" />
+
+
+        <View
+            android:id="@+id/divider_productImageSlide"
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:background="#94050505"
+            app:layout_constraintTop_toBottomOf="@+id/imageview_categorydialog_large" />
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerview_diglog_small"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_gravity="center"
+            android:clickable="true"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@+id/divider_productImageSlide" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

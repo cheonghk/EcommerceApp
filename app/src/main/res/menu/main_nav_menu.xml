@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+   >
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/navigation_home"
+            android:icon="@drawable/home"
+            android:title="Home"
+            />
+
+        <item
+            android:id="@+id/navigation_login"
+            android:title="Login / Registration"
+            android:icon="@drawable/login"
+        />
+
+    <item
+        android:id="@+id/navigation_logout"
+        android:title="Logout"
+        android:icon="@drawable/logout"/>
+</group>
+    </menu>

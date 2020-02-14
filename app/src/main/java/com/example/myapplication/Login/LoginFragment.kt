@@ -61,8 +61,9 @@ class LoginFragment : Fragment(R.layout.login_fragment), View.OnClickListener {
                             this.activity, "Welcome! ${user!!.email}",
                             Toast.LENGTH_SHORT
                         ).show()
-                        val intent = Intent(this.activity, MainActivity::class.java)
-                        startActivity(intent)
+                        activity!!.onBackPressed()
+                        //val intent = Intent(this.activity, MainActivity::class.java)
+                      //  startActivity(intent)
                         activity!!.finish()
                     } else {
                         if (!task.isSuccessful) {

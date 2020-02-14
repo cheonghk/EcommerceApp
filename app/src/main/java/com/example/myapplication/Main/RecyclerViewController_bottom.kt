@@ -30,7 +30,7 @@ class RecyclerViewController_bottom(val view: View, val mNestedScrollView : Nest
 
     init {
         view.apply {
-            databaseHelper.readData_RecyclerViewController_Bottom(object :
+            databaseHelper.readAllData(object :
                 FireBaseCollector.DataStatus {
                 override fun DataIsLoaded(theItemListModel: MutableList<ItemInfo_Firebase_Model>) {
                     itemList.addAll(theItemListModel)

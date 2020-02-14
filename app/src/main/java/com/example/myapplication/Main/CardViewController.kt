@@ -77,10 +77,10 @@ class CardViewController(val view:View) {
                 view.cardview_main.setOnClickListener {
                     var intent = Intent(it.context, CategoryActivity::class.java)
                     when (position) {
-                        0 -> intent.putExtra(category, "4")
-                        1 -> intent.putExtra(category, "2")
-                        2 -> intent.putExtra(category, "3")
-                        3 -> intent.putExtra(category, "1")
+                        0 -> intent.putExtra(category, 4)
+                        1 -> intent.putExtra(category, 2)
+                        2 -> intent.putExtra(category, 3)
+                        3 -> intent.putExtra(category, 1)
                     }
                     view.context.startActivity(intent)
                 }

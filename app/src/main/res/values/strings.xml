@@ -26,6 +26,7 @@
     <string name="register">Register</string>
     <string name="email">Email</string>
     <string name="confirm_password">Confirm password</string>
+    <string name="add_to_cart">Add to Cart</string>
 
 
 </resources>

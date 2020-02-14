@@ -11,10 +11,69 @@ class FireBaseCollector {
     private var price : Long? = null
     private var unicode :  String? = null
     private var url_forRecyclerview : String? = null
-
     private var itemList = mutableListOf<ItemInfo_Firebase_Model>()
 
-    @Synchronized
+
+    fun readData_userShoppingCart(status: ShoppingCartDataStatus){
+        iteminfoRef.addValueEventListener(object : ValueEventListener {
+            override fun onCancelled(p0: DatabaseError) {
+                "The read failed: " + p0.getMessage()
+            }
+
+            override fun onDataChange(p0: DataSnapshot) {
+
+                var newItemListWrapper2  = mutableListOf<MutableList<ItemInfo_Firebase_Model>>()
+                var newItemListWrapper2Index = 0
+
+                for (i in 1 until p0.childrenCount + 1) {
+                    var newItemListWrapper = mutableListOf<ItemInfo_Firebase_Model>()
+                    var theChild = p0.child("${i}")
+
+                    var newItemListWrapperIndex = 0
+                    for (j in 1 until theChild.childrenCount + 1) {
+                        var newItemList : ItemInfo_Firebase_Model? = null
+                        unicode = null
+                        name = null
+                        price = null
+                        var size = mutableListOf<String>()
+                        var url = mutableListOf<String>()
+                        var theChild2 = theChild.child("${j}")
+                        name = theChild2.child("name").getValue().toString()
+                        price = theChild2.child("price").getValue() as Long
+                        unicode = theChild2.child("unicode").getValue().toString()
+
+                        for (data in theChild2.child("size").children) {
+                            size.add(data.getValue().toString())
+                        }
+
+                        for (data in theChild2.child("url").children) {
+                            url.add(data.getValue().toString())
+                        }
+
+                        url_forRecyclerview =
+                            theChild2.child("url").child("1").getValue().toString()
+                        newItemList =  ItemInfo_Firebase_Model(
+                                unicode,
+                                name,
+                                price,
+                                size,
+                                url,
+                                url_forRecyclerview
+                            )
+
+                        newItemListWrapper.add(newItemListWrapperIndex, newItemList)
+                        newItemListWrapperIndex++
+                    }
+                    newItemListWrapper2 .add(newItemListWrapper2Index,newItemListWrapper)
+                    newItemListWrapper2Index++
+                }
+                status.ShoppingCartDataIsLoaded(newItemListWrapper2 )
+            }
+        })
+    }
+
+
+
     fun readData_CategoryContoller(status: DataStatus, category:String) {
             iteminfoRef.addValueEventListener(object : ValueEventListener {
                 override fun onCancelled(p0: DatabaseError) {
@@ -62,8 +121,7 @@ class FireBaseCollector {
             })
     }
 
-    @Synchronized
-    fun readData_RecyclerViewController_Bottom(status: DataStatus) {
+    fun readAllData(status: DataStatus) {
             iteminfoRef.addValueEventListener(object : ValueEventListener {
 
                 override fun onCancelled(p0: DatabaseError) {
@@ -113,8 +171,11 @@ class FireBaseCollector {
             })
     }
 
+    interface ShoppingCartDataStatus {
+        fun ShoppingCartDataIsLoaded(usershoppingcartlist : MutableList<MutableList<ItemInfo_Firebase_Model>>)
+    }
+
     interface DataStatus {
         fun DataIsLoaded(theItemListModel:  MutableList<ItemInfo_Firebase_Model>)
-
     }
 }

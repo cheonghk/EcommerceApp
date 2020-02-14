@@ -4,17 +4,16 @@ package com.example.myapplication.Category
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.example.myapplication.FireBase.FireBaseCollector
 import com.example.myapplication.FireBase.ItemInfo_Firebase_Model
 import com.example.myapplication.R
 import com.example.myapplication.Retrofit.Request.Responses.ProductInfoList
-import com.example.myapplication.Utils.FragmentTransactionUtils
+import com.example.myapplication.AppUtils.FragmentTransaction
 import com.google.common.reflect.TypeToken
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.gson.Gson
-import kotlinx.android.synthetic.main.cardview_category.*
-import kotlinx.android.synthetic.main.cardview_category.view.*
 import kotlinx.android.synthetic.main.recyclerview_category.*
 import java.io.IOException
 import java.lang.reflect.Type
@@ -22,21 +21,25 @@ import java.lang.reflect.Type
 class CategoryActivity : AppCompatActivity() {
 
     private val mFireBaseCollector = FireBaseCollector()
+    private lateinit var mAuth: FirebaseAuth
+    private var mAuthListener: FirebaseAuth.AuthStateListener? = null
     private var itemList = mutableListOf<ItemInfo_Firebase_Model>()
+    private var currentUser: FirebaseUser? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.fragment_category)
+
         var bundle : Bundle?=intent.extras
-        val getString = bundle!!.getString("category")
+        val getString = bundle!!.getInt("category")
         initialize(getString!!)
 
 
-        FragmentTransactionUtils.changeFragment(this,
-            R.id.fragment_container_category_dialog,
+        FragmentTransaction.changeFragment(this,
+            R.id.fragment_container_category,
             CategoryFragment()
         )
-
+        mAuth = FirebaseAuth.getInstance()
                 //getAssetJsonData_internal(this)
 
         //getRetrofitData() //for retrofit
@@ -44,16 +47,39 @@ class CategoryActivity : AppCompatActivity() {
        // recyclerview_category.adapter = CategoryContoller.CategoryRecyclerView_Adapter(getAssetJsonData_internal(this))
     }
 
-    fun initialize(category:String){
+    override fun onResume() {
+        super.onResume()
+        if (mAuthListener != null) {
+            mAuth.addAuthStateListener(mAuthListener!!)
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        mAuthListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
+            currentUser = firebaseAuth.currentUser
+
+            // updateUI(user)
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        FirebaseAuth.getInstance().removeAuthStateListener { this }
+    }
+
+
+
+    fun initialize(category:Int){
         mFireBaseCollector.readData_CategoryContoller(object : FireBaseCollector.DataStatus {
             override fun DataIsLoaded(theItemListModel: MutableList<ItemInfo_Firebase_Model>) {
                 itemList.addAll(theItemListModel)
                 recyclerview_category.adapter =
                     CategoryContoller.CategoryRecyclerviewAdapter(
-                        itemList
-                    )
+                        itemList, category)
+
             }
-        }, category)
+        }, category.toString())
 
     }
 

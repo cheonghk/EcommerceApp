@@ -1,13 +1,15 @@
-package com.example.myapplication.FireBase
+package com.example.myapplication.FireBase.Utils
 
-import com.example.myapplication.Category.CategoryContoller
-import kotlinx.android.synthetic.main.recyclerview_category.*
+import com.example.myapplication.FireBase.FireBaseCollector
+import com.example.myapplication.FireBase.ItemInfo_Firebase_Model
 
 object ReadDataByCategory {
 
-    private val mFireBaseCollector = FireBaseCollector()
+    private val mFireBaseCollector =
+        FireBaseCollector()
     fun initialize(category:String, itemList : MutableList<ItemInfo_Firebase_Model>) : MutableList<ItemInfo_Firebase_Model>{
-        mFireBaseCollector.readData_CategoryContoller(object : FireBaseCollector.DataStatus {
+        mFireBaseCollector.readData_CategoryContoller(object :
+            FireBaseCollector.DataStatus {
             override fun DataIsLoaded(theItemListModel: MutableList<ItemInfo_Firebase_Model>) {
                 itemList.addAll(theItemListModel)
             }

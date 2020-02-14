@@ -1,9 +1,6 @@
 package com.example.myapplication.Main
 
 import android.content.Context
-import android.content.Intent
-import android.net.ConnectivityManager
-import android.os.AsyncTask
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.TextView
@@ -15,7 +12,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import com.example.myapplication.Login.LoginActivity
 import com.example.myapplication.R
 import com.example.myapplication.ShoppingCart.ShoppingCartActivity
-import com.example.myapplication.Utils.NetWorkConnection
+import com.example.myapplication.AppUtils.NetWorkConnection
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser

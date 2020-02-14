@@ -6,24 +6,27 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:id="@+id/recyclerview_shoppingcart"
-        android:orientation="vertical"/>
+        android:orientation="vertical"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/constraint_shoppingcart"
+        android:visibility="invisible"/>
 
     <TextView
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/constraint"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:text="Sorry! In Development!"
+        android:id="@+id/textview_cartempty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Your Cart is Empty"
         android:textSize="25sp"
         android:gravity="center"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginVertical="250dp"
+        android:visibility="gone"
         />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraint"
+        android:id="@+id/constraint_shoppingcart"
         android:layout_width="match_parent"
         android:layout_height="120dp"
         android:orientation="vertical"
@@ -57,6 +60,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/totalAmount"
+            android:text="$0"
+            android:textColor="@color/Black"
+            android:textSize="22sp"
             android:layout_margin="10dp" />
 
         </LinearLayout>

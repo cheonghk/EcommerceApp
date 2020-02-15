@@ -50,11 +50,22 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="bottom"
-            android:text="Price"
-            android:textColor="#F44336"
+            android:text="$0"
             android:textSize="20sp"
             app:layout_constraintLeft_toLeftOf="@id/product_name_shoppingcart"
             app:layout_constraintTop_toBottomOf="@id/product_name_shoppingcart" />
+
+        <TextView
+            android:id="@+id/product_totalPrice_shoppingcart"
+            app:layout_constraintTop_toTopOf="@id/product_price_shoppingcart"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="$0"
+            android:textColor="#F44336"
+            android:textSize="20sp"
+            android:layout_marginHorizontal="50dp"
+            />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -89,6 +100,16 @@
                 android:gravity="center|center_horizontal|center_vertical"
                 android:text="+" />
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/delItem"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Delete"
+            android:clickable="true"
+            android:textColor="#AEF44330"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -1,23 +1,24 @@
 package com.example.myapplication.ShoppingCart
 
+import android.app.Dialog
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.myapplication.FireBase.FireBaseCollector
 import com.example.myapplication.FireBase.ItemInfo_Firebase_Model
 import com.example.myapplication.R
-import com.example.myapplication.ShoppingCart.Utils.FireStoreUtils
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
-import kotlinx.android.synthetic.main.cardview_category.view.*
 import kotlinx.android.synthetic.main.cardview_shoppingcart.view.*
-import kotlinx.android.synthetic.main.shoppingcart.view.*
 
-class RecyclerviewShoppingCartAdapter (val itemList: MutableList<ItemInfo_Firebase_Model>, val userShoppingCartList :MutableList<ShoppingCartModel>):
+
+class RecyclerviewShoppingCartAdapter (val userShoppingCartList :MutableList<ShoppingCartModel>):
     RecyclerView.Adapter<RecyclerviewShoppingCartAdapter.ShoppingCartViewHolder>() {
+
+    var callBack : CallBack? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShoppingCartViewHolder =
         ShoppingCartViewHolder(
@@ -32,15 +33,32 @@ class RecyclerviewShoppingCartAdapter (val itemList: MutableList<ItemInfo_Fireba
         return userShoppingCartList.size
     }
 
+    fun setMyCallBack(callBack: CallBack) {
+        this.callBack = callBack
+    }
+
+    interface CallBack {
+        fun updateTotalAmount(updatePrice : Double)
+    }
+
     override fun onBindViewHolder(holder: ShoppingCartViewHolder, position: Int) {
-        //itemList.get(position)
-        holder.loadUserCart(userShoppingCartList, position)
+        holder.initUserCart(userShoppingCartList, position)
+        holder.selectedNumCalcalculate(callBack!!)
+        holder.view.delItem.setOnClickListener {
+            Toast.makeText(holder.view.context, "not defined yet", Toast.LENGTH_SHORT).show()
+        }
     }
 
     class ShoppingCartViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+
+        var totalAmount :Double= 0.0
         val mFireBaseCollector = FireBaseCollector()
 
-        fun loadUserCart(userShoppingCartInfo :MutableList<ShoppingCartModel>
+        var num :Int =0
+        var price :Long = 0
+
+
+        fun initUserCart(userShoppingCartInfo :MutableList<ShoppingCartModel>
         , position :Int){
             var category = userShoppingCartInfo.get(position).category
             var subcategory_position = userShoppingCartInfo.get(position).sub_category
@@ -48,33 +66,68 @@ class RecyclerviewShoppingCartAdapter (val itemList: MutableList<ItemInfo_Fireba
             var unicode = userShoppingCartInfo.get(position).unicode
 
             mFireBaseCollector.readData_userShoppingCart(object:FireBaseCollector.ShoppingCartDataStatus{
-                override fun ShoppingCartDataIsLoaded(userShoppingCartList: MutableList<MutableList<ItemInfo_Firebase_Model>>) {
-                  fun subList():ItemInfo_Firebase_Model{
-                        return userShoppingCartList.get(category!!-1).get(subcategory_position!!)
+                override fun ShoppingCartDataIsLoaded(retriveListByCategoryPosition: MutableList<MutableList<ItemInfo_Firebase_Model>>) {
+
+                    fun dataProvider():ItemInfo_Firebase_Model{
+                        return retriveListByCategoryPosition.get(category!!-1).get(subcategory_position!!)
                     }
+
+                    price = dataProvider().price!!
+                    num = totalItems!!
+
                     view.apply {
-                        product_name_shoppingcart.text = subList().name
-                        product_price_shoppingcart.text = "$" + subList().price.toString()
-                        Glide.with(context).load(subList().url_forRecyclerview)
+                        product_name_shoppingcart.text = dataProvider().name
+                        product_price_shoppingcart.text = "$" + price.toString()
+                        Glide.with(context).load(dataProvider().url_forRecyclerview)
                             .into(product_image_shoppingcart)
                         numberOfItem_shoppingcart.text = totalItems.toString()
+
+                        setTextTotalPrice()
                     }
                 }
             })
         }
 
-        fun bindItemList(itemListModel: ItemInfo_Firebase_Model) {
+        fun selectedNumCalcalculate(callBack : CallBack) {
             view.apply {
-                product_name_shoppingcart.text = itemListModel.name
-                product_price_shoppingcart.text = "$" + itemListModel.price.toString()
-                Glide.with(context).load(itemListModel.url_forRecyclerview)
-                    .into(product_image_shoppingcart)
+                numberOfItem_shoppingcart.text = num.toString()
+                minusBttn_shoppingcart.setOnClickListener {
+                    if (num > 1) { //at least 1 item in the list of shoppingcart, use del button instead if destroy
+                        num--
+                        numberOfItem_shoppingcart.text = num.toString()
+                        updateAllItemsTotalAmount(callBack, -price.toDouble())
+                        setTextTotalPrice()
+                    }
 
+                }
+                plusBttn_shoppingcart.setOnClickListener {
+                        num++
+                        numberOfItem_shoppingcart.text = num.toString()
+                        updateAllItemsTotalAmount(callBack, price.toDouble())
+                        setTextTotalPrice()
+                }
             }
         }
 
-        companion object const
+        fun setTextTotalPrice(){
+            var totalAmount : Double=num*price.toDouble()
+            if(totalAmount ==0.0){
+                view.product_totalPrice_shoppingcart.text = "$" + totalAmount.toInt().toString()
+                return
+            }
+            view.product_totalPrice_shoppingcart.text = "$" + totalAmount.toString()
+        }
 
+        fun updateAllItemsTotalAmount(callBack : CallBack, price:Double){
+          callBack.updateTotalAmount(price)
+        //   totalAmount.text = "$"
+        }
+
+        fun deleteItem(){
+            view.delItem.setOnClickListener { Toast.makeText(view.context, "not defined yet",Toast.LENGTH_SHORT).show() }
+        }
+
+        companion object const
         val TAG = "RecyclerviewShoppingCartAdapter.ShoppingCartViewHolder"
     }
 }

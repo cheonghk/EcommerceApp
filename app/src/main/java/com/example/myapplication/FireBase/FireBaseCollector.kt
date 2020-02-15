@@ -176,6 +176,6 @@ class FireBaseCollector {
     }
 
     interface DataStatus {
-        fun DataIsLoaded(theItemListModel:  MutableList<ItemInfo_Firebase_Model>)
+        fun DataIsLoaded(userShoppingCartInfo:  MutableList<ItemInfo_Firebase_Model>)
     }
 }

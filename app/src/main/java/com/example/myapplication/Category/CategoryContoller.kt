@@ -55,8 +55,7 @@ class CategoryContoller(val view: View) {
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             holder.also {
                 it.bindItemList(itemList[position])
-                it.selectedNumCalcalculate()
-
+                it.selectedNumCalcalculate(itemList[position])
                 it.view.product_image_category.setOnClickListener {
                     when (position) {
                         else -> {
@@ -102,17 +101,17 @@ class CategoryContoller(val view: View) {
     }
 
     class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
-        var num = 0
+        var num:Int = 0
         fun bindItemList(itemListModel: ItemInfo_Firebase_Model) {
             view.apply {
                 product_name_category.text = itemListModel.name
-                product_price_category.text = "$" + itemListModel.price.toString()
+                product_price_category.text = "$" + itemListModel.price!!.toDouble().toString()
                 Glide.with(context).load(itemListModel.url_forRecyclerview)
                     .into(product_image_category)
             }
         }
 
-        fun selectedNumCalcalculate() {
+        fun selectedNumCalcalculate(itemListModel: ItemInfo_Firebase_Model) {
             view.apply {
                 numberOfItem.text = num.toString()
                 minusBttn.setOnClickListener {
@@ -124,6 +123,7 @@ class CategoryContoller(val view: View) {
                         }
                         numberOfItem.text = num.toString()
                     }
+                    setTotalPrice(itemListModel.price!!)
                 }
                 plusBttn.setOnClickListener {
                     if (num >= 0) {
@@ -134,13 +134,23 @@ class CategoryContoller(val view: View) {
                         }
                         numberOfItem.text = num.toString()
                     }
+                    setTotalPrice(itemListModel.price!!)
                 }
             }
         }
 
+        fun setTotalPrice(price: Long){
+            var totalAmount : Double= num*price.toDouble()
+            if(totalAmount ==0.0){
+                totalAmount.toInt().toString()
+                view.product_totalPrice_category.text = "$" + totalAmount.toInt().toString()
+                return
+            }
+            view.product_totalPrice_category.text = "$" + totalAmount.toString()
+        }
+
 
         fun showImageSlideDialog(itemList: ItemInfo_Firebase_Model) {
-
             val mProductImageSlideFragment = ProductImageSlideFragment(itemList)
             mProductImageSlideFragment.show(
                 (view.context as CategoryActivity).getSupportFragmentManager(),
@@ -163,13 +173,13 @@ class CategoryContoller(val view: View) {
                 val storeNum = num
 
 
-                val itemInfo2 = ShoppingCartModel()
-                itemInfo2.unicode = itemList.unicode
-                itemInfo2.sub_category = position
-                itemInfo2.totalItems = storeNum
-                itemInfo2.category = category
+                val itemInfo = ShoppingCartModel()
+                itemInfo.unicode = itemList.unicode
+                itemInfo.sub_category = position
+                itemInfo.totalItems = storeNum
+                itemInfo.category = category
 
-                FireStoreUtils.mFirebaseFirestore(uid).set(itemInfo2).addOnCompleteListener { task ->
+                FireStoreUtils.mFirebaseFirestore(uid).set(itemInfo).addOnCompleteListener { task ->
                     // mFirebaseFirestore.set(itemInfo).addOnCompleteListener {task ->
                     if (task.isSuccessful) {
                         Snackbar.make(view, "Added to cart", Snackbar.LENGTH_SHORT).show()

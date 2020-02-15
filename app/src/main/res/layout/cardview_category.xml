@@ -46,16 +46,29 @@
       app:layout_constraintStart_toEndOf="@id/guideline"
       android:layout_marginStart="10dp"/>
 
+
   <TextView
+      app:layout_constraintStart_toStartOf="@id/product_name_category"
+      app:layout_constraintTop_toBottomOf="@id/product_name_category"
       android:id="@+id/product_price_category"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:gravity="bottom"
-      android:text="Price"
-      android:textColor="#F44336"
+      android:text="$0"
+      android:textColor="@color/Black"
       android:textSize="20sp"
-      app:layout_constraintStart_toStartOf="@id/product_name_category"
-      app:layout_constraintTop_toBottomOf="@id/product_name_category" />
+      />
+
+   <TextView
+       android:id="@+id/product_totalPrice_category"
+       app:layout_constraintTop_toTopOf="@id/product_price_category"
+       app:layout_constraintEnd_toEndOf="parent"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:text="$0"
+       android:textColor="#F44336"
+       android:textSize="20sp"
+       android:layout_marginHorizontal="50dp"
+       />
 
   <LinearLayout
       android:layout_width="wrap_content"
@@ -63,7 +76,7 @@
       android:orientation="horizontal"
       android:layout_marginTop="10dp"
       app:layout_constraintStart_toStartOf="@id/product_name_category"
-      app:layout_constraintTop_toBottomOf="@id/product_price_category">
+      app:layout_constraintTop_toBottomOf="@+id/product_price_category">
 
    <Button
        android:id="@+id/minusBttn"

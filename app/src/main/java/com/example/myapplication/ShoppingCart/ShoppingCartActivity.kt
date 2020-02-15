@@ -4,6 +4,8 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Adapter
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapplication.Category.CategoryContoller
@@ -23,17 +25,14 @@ class ShoppingCartActivity:  AppCompatActivity() {
 
     private lateinit var mAuth: FirebaseAuth
     private var mAuthListener: FirebaseAuth.AuthStateListener? = null
-    //val adapter = RecyclerviewShoppingCartAdapter()
     private val mFireBaseCollector = FireBaseCollector()
-    private var itemList = mutableListOf<ItemInfo_Firebase_Model>()
     private var userShoppingCartList = mutableListOf<ShoppingCartModel>()
-    //var adapter : RecyclerviewShoppingCartAdapter? = null
+    private var adapter :RecyclerviewShoppingCartAdapter? = null
+    private var updateAllTotalAmount = 0.0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.shoppingcart)
-       // initialize()
-
         mAuth = FirebaseAuth.getInstance()
         recyclerview_shoppingcart.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
@@ -45,19 +44,52 @@ class ShoppingCartActivity:  AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         initUserStatus()
-        initialize()
     }
 
-    fun initialize(){
-        mFireBaseCollector.readAllData(object : FireBaseCollector.DataStatus {
-            override fun DataIsLoaded(theItemListModel: MutableList<ItemInfo_Firebase_Model>) {
-                itemList.addAll(theItemListModel)
-                recyclerview_shoppingcart.adapter = RecyclerviewShoppingCartAdapter(itemList, userShoppingCartList)
-                Log.i("adapter", "${userShoppingCartList.size}")
-            }
-        })
 
-    }
+    fun updateAllTotalAmountFromAdapter(){
+                adapter!!.setMyCallBack(object : RecyclerviewShoppingCartAdapter.CallBack{
+                    override fun updateTotalAmount(updatePrice : Double) {
+                        updateAllTotalAmount += updatePrice
+                        val updatedAmount = updateAllTotalAmount
+                        totalAmountText.text = "$" + updatedAmount.toString()
+                        Log.i("updateAllTotalAmount","${updatedAmount}" )
+                    }
+                })}
+
+
+    fun initTotalAmount(){
+        var allTotalAmount : Double = 0.0
+        var num :Int =0
+        var price :Long = 0
+
+        for(position in 0 until userShoppingCartList.size) {
+            Log.i("position  - i", "${position}")
+            var category = userShoppingCartList.get(position).category
+            var subcategory_position = userShoppingCartList.get(position).sub_category
+            var totalItems = userShoppingCartList.get(position).totalItems
+            var unicode = userShoppingCartList.get(position).unicode
+            mFireBaseCollector.readData_userShoppingCart(object :
+                FireBaseCollector.ShoppingCartDataStatus {
+                override fun ShoppingCartDataIsLoaded(retriveListByCategoryPosition: MutableList<MutableList<ItemInfo_Firebase_Model>>) {
+                    //retrivedListByCategoryPosition.add(retriveListByCategoryPosition)
+                    fun dataProvider(): ItemInfo_Firebase_Model {
+                        return retriveListByCategoryPosition.get(category!! - 1)
+                            .get(subcategory_position!!)
+                    }
+
+                    price = dataProvider().price!!
+                    num = totalItems!!
+                    val singleItemTotalPrice = price * num
+                    allTotalAmount += singleItemTotalPrice
+                    if (position == userShoppingCartList.size-1)
+                        totalAmountText.text = "$" + allTotalAmount.toString()
+                    updateAllTotalAmount = allTotalAmount
+                }
+            })
+        }
+        }
+
 
         fun initUserStatus(){
             mAuthListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
@@ -82,8 +114,16 @@ class ShoppingCartActivity:  AppCompatActivity() {
                         for (i in userItemList) {
                             val cartItems = i.toObject(ShoppingCartModel::class.java)
                             userShoppingCartList.add(cartItems!!)
+
+                            adapter = RecyclerviewShoppingCartAdapter(userShoppingCartList)
+                            recyclerview_shoppingcart.adapter = adapter
+
                             recyclerview_shoppingcart.visibility = View.VISIBLE
-                            recyclerview_shoppingcart.adapter?.notifyDataSetChanged()
+                           recyclerview_shoppingcart.adapter?.notifyDataSetChanged()
+
+                            initTotalAmount()
+                            updateAllTotalAmountFromAdapter()
+
                         }
                     }else{
                         textview_cartempty.visibility = View.VISIBLE

@@ -2,6 +2,7 @@ package com.example.myapplication.ShoppingCart
 
 class ShoppingCartModel() {
 
+
     var category : Int? = null
     var sub_category:Int? = null
     var totalItems:Int? = null

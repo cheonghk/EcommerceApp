@@ -67,7 +67,7 @@ class FireBaseCollector {
                     newItemListWrapper2 .add(newItemListWrapper2Index,newItemListWrapper)
                     newItemListWrapper2Index++
                 }
-                status.ShoppingCartDataIsLoaded(newItemListWrapper2 )
+                status.ShoppingCartData(newItemListWrapper2 )
             }
         })
     }
@@ -172,7 +172,7 @@ class FireBaseCollector {
     }
 
     interface ShoppingCartDataStatus {
-        fun ShoppingCartDataIsLoaded(usershoppingcartlist : MutableList<MutableList<ItemInfo_Firebase_Model>>)
+        fun ShoppingCartData(retriveListByCategoryPosition : MutableList<MutableList<ItemInfo_Firebase_Model>>)
     }
 
     interface DataStatus {

@@ -46,11 +46,11 @@ class ShoppingCartActivity:  AppCompatActivity() {
     fun initUserStatus(){
         mAuthListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
             user = firebaseAuth.currentUser
-            updateUI()
+            updateUI(true)
         }
     }
 
-    fun updateUI() {
+    fun updateUI(isInitilize :Boolean) {
         if (user != null) {   // Name, email address, and profile photo Url
             // val name = user.displayName
             //val email = user.email
@@ -67,14 +67,22 @@ class ShoppingCartActivity:  AppCompatActivity() {
                         for (i in userItemList) {
                             val cartItems = i.toObject(ShoppingCartModel::class.java)
                             userShoppingCartList.add(cartItems!!)}
-                         recyclerview_shoppingcart.adapter = null
+
+                        if(isInitilize) {
                             adapter = RecyclerviewShoppingCartAdapter(userShoppingCartList, uid)
+                            //adapter!!.setData(userShoppingCartList)
                             recyclerview_shoppingcart.adapter = adapter
                             recyclerview_shoppingcart.visibility = View.VISIBLE
-                            initTotalAmount()
+                        }else{
+                            recyclerview_shoppingcart.adapter!!.notifyDataSetChanged()
+                        }
+
+                        initTotalAmount()
                         callBackFromAdapter()
 
                     }else{
+                        userShoppingCartList.clear()
+                        initTotalAmount()
                         textview_cartempty.visibility = View.VISIBLE
                         recyclerview_shoppingcart.visibility = View.INVISIBLE
                         Log.i(TAG, "Retrival failed or cart is empty, size = : ${userShoppingCartList.size}")
@@ -88,6 +96,11 @@ class ShoppingCartActivity:  AppCompatActivity() {
         var allTotalAmount : Double = 0.0
         var num :Int =0
         var price :Long = 0
+
+        if(userShoppingCartList.size==0){ //no item, empty cart
+            totalAmountText.text = "$" + allTotalAmount.toString()
+            return
+        }
 
         for(position in 0 until userShoppingCartList.size) {
             var category = userShoppingCartList.get(position).category
@@ -118,6 +131,7 @@ class ShoppingCartActivity:  AppCompatActivity() {
 
     fun callBackFromAdapter(){
         adapter!!.setCallBack(object : RecyclerviewShoppingCartAdapter.CallBack{
+
             override fun updateTotalAmount(updatePrice : Double) {
                 updateAllTotalAmount += updatePrice
                 val updatedAmount = updateAllTotalAmount
@@ -125,12 +139,10 @@ class ShoppingCartActivity:  AppCompatActivity() {
             }
 
             override fun updateUIAfterDeletedItem() {
-                updateUI()
-                //recyclerview_shoppingcart.adapter?.notifyDataSetChanged()
-                Toast.makeText(this@ShoppingCartActivity, "updateUIAfterDeletedItem", Toast.LENGTH_SHORT).show()
+                updateUI(false)
+                Toast.makeText(this@ShoppingCartActivity, "Item is deleted", Toast.LENGTH_SHORT).show()
             }
         })}
-
 
 
     override fun onResume() {

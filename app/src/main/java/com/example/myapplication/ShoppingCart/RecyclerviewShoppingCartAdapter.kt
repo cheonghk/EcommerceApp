@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.myapplication.FireBase.FireBaseCollector
@@ -56,6 +57,15 @@ class RecyclerviewShoppingCartAdapter(
         holder.view.delItem.setOnClickListener {
             holder.deleteItem(mCallBack!!, uid)
         }
+    }
+
+    fun setData(itemList: MutableList<ShoppingCartModel>) {
+        val diffCallback =
+            ShoppingCartActivity_DiffCallback(userShoppingCartList, itemList)
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
+        userShoppingCartList.clear()
+        userShoppingCartList.addAll(itemList)
+        diffResult.dispatchUpdatesTo(this)
     }
 
 
@@ -148,11 +158,6 @@ class RecyclerviewShoppingCartAdapter(
         fun deleteItem(callBack : CallBack, uid: String) {
             val ref = FireStoreRetrivalUtils.mFirebaseFirestore(uid).document(unicode!!)
             ref.delete().addOnSuccessListener {
-                Toast.makeText(
-                    view.context,
-                    "Item deleted",
-                    Toast.LENGTH_SHORT
-                ).show()
                 callBack?.updateUIAfterDeletedItem()
             }.addOnFailureListener { e ->
                 Toast.makeText(
@@ -166,6 +171,30 @@ class RecyclerviewShoppingCartAdapter(
         companion object const
 
         val TAG = "RecyclerviewShoppingCartAdapter.ShoppingCartViewHolder"
+
+    }
+
+    class ShoppingCartActivity_DiffCallback(
+        private val oldList: MutableList<ShoppingCartModel>,
+        private val newList: MutableList<ShoppingCartModel>
+    ) : DiffUtil.Callback() {
+
+
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldList[oldItemPosition].unicode === newList[newItemPosition].unicode
+        }
+
+        override fun getOldListSize(): Int {
+            return oldList.size
+        }
+
+        override fun getNewListSize(): Int {
+            return newList.size
+        }
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldList.get(oldItemPosition).equals(newList.get(newItemPosition))
+        }
 
     }
 }

@@ -2,6 +2,7 @@ package com.example.myapplication.Category
 
 import android.content.Intent
 import android.os.CountDownTimer
+import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -39,7 +40,6 @@ class CategoryContoller(val view: View) {
     ) :
         RecyclerView.Adapter<CategoryRecyclerviewAdapter.CategoryViewHolder>() {
 
-        private var mItemInfo: List<ItemInfo>? = null
         var currentUser = FirebaseAuth.getInstance().currentUser
 
 
@@ -91,11 +91,6 @@ class CategoryContoller(val view: View) {
             return itemList.size
         }
 
-        fun setItemInfo(itemInfo: List<ItemInfo>) {
-            mItemInfo = itemInfo
-            notifyDataSetChanged()
-        }
-
 
         class CategoryViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
@@ -141,8 +136,7 @@ class CategoryContoller(val view: View) {
             fun setTotalPrice(price: Long) {
                 var totalAmount: Double = num * price.toDouble()
                 if (totalAmount == 0.0) {
-                    totalAmount.toInt().toString()
-                    view.product_totalPrice_category.text = "$" + totalAmount.toInt().toString()
+                    view.product_totalPrice_category.text = ""
                     return
                 }
                 view.product_totalPrice_category.text = "$" + totalAmount.toString()
@@ -163,7 +157,7 @@ class CategoryContoller(val view: View) {
                 currentUser: FirebaseUser,
                 position: Int
             ) {
-                view.bttn_addtocart.isClickable = false
+
                 if (num > 0) {
                     var registration: ListenerRegistration? = null
                     val unicode = itemList.unicode
@@ -171,7 +165,6 @@ class CategoryContoller(val view: View) {
 
                     var itemsRef = FireStoreRetrivalUtils.mFirebaseFirestore(uid)
                     var unicodeRef = FireStoreRetrivalUtils.mFirebaseFirestore(uid).document(unicode!!)
-
 
 
                      registration = unicodeRef.addSnapshotListener { documentSnapshot, exce ->
@@ -183,7 +176,7 @@ class CategoryContoller(val view: View) {
 
                             var updatedNum  = num + origTotalItems!!
 
-                            //update item num insdtead of creating a new one
+                            //update of item num insdtead of creating
                             unicodeRef.update("totalItems", updatedNum)
                                 .addOnSuccessListener {
                                     Snackbar.make(view, "Added to cart", Snackbar.LENGTH_SHORT).show()
@@ -197,6 +190,7 @@ class CategoryContoller(val view: View) {
                                 }
 
                             registration?.remove()
+
                         }else{
                             //create new node if it is new item
                             val itemInfo = ShoppingCartModel()
@@ -213,16 +207,11 @@ class CategoryContoller(val view: View) {
                                 Toast.makeText(view.context, "Failed", Toast.LENGTH_SHORT).show()
                             }
                         }
+
                     }
 
                 }
-                object : CountDownTimer(3000, 1000) {
-                    override fun onTick(millisUntilFinished: Long) {
-                    }
-                    override fun onFinish() {
-                        view.bttn_addtocart.isClickable = true
-                    }
-                }.start()
+
             }
 
             companion object

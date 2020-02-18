@@ -1,11 +1,14 @@
 package com.example.myapplication.ShoppingCart
 
 
+import android.content.DialogInterface
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -13,7 +16,9 @@ import com.example.myapplication.FireBase.FireBaseCollector
 import com.example.myapplication.FireBase.ItemInfo_Firebase_Model
 import com.example.myapplication.R
 import com.example.myapplication.ShoppingCart.Utils.FireStoreRetrivalUtils
+import kotlinx.android.synthetic.main.cardview_main.*
 import kotlinx.android.synthetic.main.cardview_shoppingcart.view.*
+import kotlinx.android.synthetic.main.deleteitem_dialog.view.*
 
 class RecyclerviewShoppingCartAdapter(
     val userShoppingCartList: MutableList<ShoppingCartModel>,
@@ -55,7 +60,7 @@ class RecyclerviewShoppingCartAdapter(
         it.selectedNumCalcalculate(mCallBack!!, uid)
        }
         holder.view.delItem.setOnClickListener {
-            holder.deleteItem(mCallBack!!, uid)
+            holder.deleteItemAlertDialog(mCallBack!!, uid)
         }
     }
 
@@ -76,7 +81,8 @@ class RecyclerviewShoppingCartAdapter(
         var num: Int = 0
         var price: Long = 0
         val itemInfo = ShoppingCartModel()
-        var unicode :String? = null
+        var unicode: String? = null
+        var alertDialog: AlertDialog? = null
 
         fun initUserCart(
             userShoppingCartInfo: MutableList<ShoppingCartModel>
@@ -88,7 +94,7 @@ class RecyclerviewShoppingCartAdapter(
             var unicode = userShoppingCartInfo.get(position).unicode
 
             this.num = totalItems!!
-            this.unicode=unicode
+            this.unicode = unicode
 
 
             mFireBaseCollector.readData_userShoppingCart(object :
@@ -155,7 +161,27 @@ class RecyclerviewShoppingCartAdapter(
             }
         }
 
-        fun deleteItem(callBack : CallBack, uid: String) {
+
+        fun deleteItemAlertDialog(callBack: CallBack, uid: String) {
+            val builder: AlertDialog.Builder = AlertDialog.Builder(view.context)
+            //builder.setMessage("Delete the item?")
+            val inflater =
+                LayoutInflater.from(view.context).inflate(R.layout.deleteitem_dialog, null)
+            builder.setView(inflater)
+            builder.setCancelable(true)
+            var alertDialog = builder.create()
+            alertDialog.show()
+
+            val bttn_confirmdelete = inflater.findViewById<Button>(R.id.bttn_confirmdelete)
+            val bttn_canceldelete = inflater.findViewById<Button>(R.id.bttn_canceldelete)
+              bttn_canceldelete.setOnClickListener { alertDialog.cancel()}
+              bttn_confirmdelete.setOnClickListener{ operateDeleteItem(callBack, uid)
+                      alertDialog.dismiss()
+              }
+          }
+
+
+            fun operateDeleteItem(callBack: CallBack, uid: String) {
             val ref = FireStoreRetrivalUtils.mFirebaseFirestore(uid).document(unicode!!)
             ref.delete().addOnSuccessListener {
                 callBack?.updateUIAfterDeletedItem()
@@ -165,13 +191,11 @@ class RecyclerviewShoppingCartAdapter(
                     "${e.message}",
                     Toast.LENGTH_SHORT
                 ).show()
-            }
-        }
+        }}
 
         companion object const
 
         val TAG = "RecyclerviewShoppingCartAdapter.ShoppingCartViewHolder"
-
     }
 
     class ShoppingCartActivity_DiffCallback(

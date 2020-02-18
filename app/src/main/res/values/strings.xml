@@ -27,6 +27,10 @@
     <string name="email">Email</string>
     <string name="confirm_password">Confirm password</string>
     <string name="add_to_cart">Add to Cart</string>
+    <string name="text_deleteItem">Delete</string>
+    <string name="text_cancedeleteitem">Cancel</string>
+    <string name="delete_the_item_from_shopping_cart">Delete the item?</string>
+    <string name="delete_the_item">Delete the item?</string>
 
 
 </resources>

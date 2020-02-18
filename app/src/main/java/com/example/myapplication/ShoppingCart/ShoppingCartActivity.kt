@@ -2,8 +2,10 @@ package com.example.myapplication.ShoppingCart
 
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.get
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -33,9 +35,9 @@ class ShoppingCartActivity:  AppCompatActivity() {
         setContentView(R.layout.shoppingcart)
         mAuth = FirebaseAuth.getInstance()
         recyclerview_shoppingcart.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        //recyclerview_shoppingcart.adapter = adapter
-      //  recyclerview_shoppingcart.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
-    }
+
+        }
+
 
 
     override fun onStart() {
@@ -99,6 +101,7 @@ class ShoppingCartActivity:  AppCompatActivity() {
 
         if(userShoppingCartList.size==0){ //no item, empty cart
             totalAmountText.text = "$" + allTotalAmount.toString()
+            checkOut(false)
             return
         }
 
@@ -127,6 +130,7 @@ class ShoppingCartActivity:  AppCompatActivity() {
                 }
             })
         }
+        checkOut(true)
         }
 
     fun callBackFromAdapter(){
@@ -151,6 +155,19 @@ class ShoppingCartActivity:  AppCompatActivity() {
             mAuth.addAuthStateListener(mAuthListener!!)
         }
     }
+
+    fun checkOut(canbecheckout : Boolean){
+        if(canbecheckout){
+            checkoutBttn.isClickable = true
+            checkoutBttn.alpha = 1f
+            //checkoutBttn.setOnClickListener {  }
+        }
+        else{checkoutBttn.alpha = 0.3f
+            checkoutBttn.isClickable = false}
+    }
+
+
+
 
     override fun onStop() {
         super.onStop()

@@ -157,60 +157,80 @@ class CategoryContoller(val view: View) {
                 currentUser: FirebaseUser,
                 position: Int
             ) {
+                view.bttn_addtocart.isClickable=false
+                    if (num > 0) {
+                        var registration: ListenerRegistration? = null
+                        val unicode = itemList.unicode
+                        val uid = currentUser.uid
 
-                if (num > 0) {
-                    var registration: ListenerRegistration? = null
-                    val unicode = itemList.unicode
-                    val uid = currentUser.uid
-
-                    var itemsRef = FireStoreRetrivalUtils.mFirebaseFirestore(uid)
-                    var unicodeRef = FireStoreRetrivalUtils.mFirebaseFirestore(uid).document(unicode!!)
+                        var itemsRef = FireStoreRetrivalUtils.mFirebaseFirestore(uid)
+                        var unicodeRef =
+                            FireStoreRetrivalUtils.mFirebaseFirestore(uid).document(unicode!!)
 
 
-                     registration = unicodeRef.addSnapshotListener { documentSnapshot, exce ->
-                        if (documentSnapshot!!.exists()) {//run if item is already exist
+                        registration = unicodeRef.addSnapshotListener { documentSnapshot, exce ->
+                            if (documentSnapshot!!.exists()) {//run if item is already exist
 
-                            //find out the oringal number
-                            val shoppingModelObj = documentSnapshot.toObject(ShoppingCartModel::class.java)
-                            val origTotalItems = shoppingModelObj?.totalItems
+                                Log.i("update", "update")
+                                //find out the oringal number
+                                val shoppingModelObj =
+                                    documentSnapshot.toObject(ShoppingCartModel::class.java)
+                                val origTotalItems = shoppingModelObj?.totalItems
 
-                            var updatedNum  = num + origTotalItems!!
+                                var updatedNum = num + origTotalItems!!
 
-                            //update of item num insdtead of creating
-                            unicodeRef.update("totalItems", updatedNum)
-                                .addOnSuccessListener {
-                                    Snackbar.make(view, "Added to cart", Snackbar.LENGTH_SHORT).show()
-                                    Log.i(TAG, "Update item succesfully")
-                                }.addOnFailureListener { e ->
-                                    Toast.makeText(
-                                        view.context,
-                                        "${e.message}",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                                //update of item num insdtead of creating
+                                unicodeRef.update("totalItems", updatedNum)
+                                    .addOnSuccessListener {
+                                        Snackbar.make(
+                                            view,
+                                            "The cart is updated",
+                                            Snackbar.LENGTH_SHORT
+                                        ).show()
+                                        Log.i(TAG, "Update item succesfully")
+                                    }.addOnFailureListener { e ->
+                                        Toast.makeText(
+                                            view.context,
+                                            "${e.message}",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+
+                                registration?.remove()
+
+                            } else{
+                                Log.i("create", "create")
+                                //create new node if it is new item
+                                val itemInfo = ShoppingCartModel()
+                                itemInfo.unicode = itemList.unicode
+                                itemInfo.sub_category = position
+                                itemInfo.totalItems = num
+                                itemInfo.category = category
+
+
+
+                                //add to cart
+                                itemsRef.document(itemList.unicode!!).set(itemInfo)
+                                    .addOnSuccessListener {
+                                        Snackbar.make(view, "Added to cart", Snackbar.LENGTH_SHORT)
+                                            .show()
+                                        Toast.makeText(
+                                            view.context,
+                                            "Added to cart",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }.addOnFailureListener { e ->
+                                    Log.w(TAG, "Error writing document", e)
+                                    Toast.makeText(view.context, "Failed", Toast.LENGTH_SHORT)
+                                        .show()
                                 }
-
-                            registration?.remove()
-
-                        }else{
-                            //create new node if it is new item
-                            val itemInfo = ShoppingCartModel()
-                            itemInfo.unicode = itemList.unicode
-                            itemInfo.sub_category = position
-                            itemInfo.totalItems = num
-                            itemInfo.category = category
-
-                            //add to cart
-                            itemsRef.document(itemList.unicode!!).set(itemInfo).addOnSuccessListener {
-                                Snackbar.make(view, "Added to cart", Snackbar.LENGTH_SHORT).show()
-                            }.addOnFailureListener { e ->
-                                Log.w(TAG, "Error writing document", e)
-                                Toast.makeText(view.context, "Failed", Toast.LENGTH_SHORT).show()
+                                registration?.remove()
                             }
+
                         }
 
                     }
-
-                }
+                Handler().postDelayed(Runnable { view.bttn_addtocart.isClickable=true },1500)
 
             }
 

@@ -77,10 +77,14 @@ class CardViewController(val view:View) {
                 view.cardview_main.setOnClickListener {
                     var intent = Intent(it.context, CategoryActivity::class.java)
                     when (position) {
-                        0 -> intent.putExtra(category, 4)
-                        1 -> intent.putExtra(category, 2)
-                        2 -> intent.putExtra(category, 3)
-                        3 -> intent.putExtra(category, 1)
+                        0 -> {intent.putExtra(category, 4)
+                        intent.putExtra("toolBarTitle", "New Arrivals")}
+                        1 -> {intent.putExtra(category, 2)
+                            intent.putExtra("toolBarTitle", "Clothings")}
+                        2 -> {intent.putExtra(category, 3)
+                            intent.putExtra("toolBarTitle", "Shoes")}
+                        3 -> {intent.putExtra(category, 1)
+                            intent.putExtra("toolBarTitle", "Bags")}
                     }
                     view.context.startActivity(intent)
                 }
@@ -89,6 +93,7 @@ class CardViewController(val view:View) {
 
         companion object {
             const val category = "category"
+            const val ToolBarTitle = "toolBarTitle"
         }
     }
 

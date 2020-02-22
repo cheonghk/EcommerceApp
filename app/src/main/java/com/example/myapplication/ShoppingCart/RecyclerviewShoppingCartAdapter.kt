@@ -16,15 +16,14 @@ import com.example.myapplication.FireBase.FireBaseCollector
 import com.example.myapplication.FireBase.ItemInfo_Firebase_Model
 import com.example.myapplication.R
 import com.example.myapplication.ShoppingCart.Utils.FireStoreRetrivalUtils
-import kotlinx.android.synthetic.main.cardview_main.*
 import kotlinx.android.synthetic.main.cardview_shoppingcart.view.*
-import kotlinx.android.synthetic.main.deleteitem_dialog.view.*
 
 class RecyclerviewShoppingCartAdapter(
     val userShoppingCartList: MutableList<ShoppingCartModel>,
     val uid: String
 ) :
     RecyclerView.Adapter<RecyclerviewShoppingCartAdapter.ShoppingCartViewHolder>() {
+
 
     var  mCallBack:  CallBack? = null
    // var mCallBackAfterDeleteItem:  CallBackToUpdateAmount? = null
@@ -73,16 +72,12 @@ class RecyclerviewShoppingCartAdapter(
         diffResult.dispatchUpdatesTo(this)
     }
 
-
     class ShoppingCartViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
-        var totalAmount: Double = 0.0
         val mFireBaseCollector = FireBaseCollector()
         var num: Int = 0
         var price: Long = 0
-        val itemInfo = ShoppingCartModel()
         var unicode: String? = null
-        var alertDialog: AlertDialog? = null
 
         fun initUserCart(
             userShoppingCartInfo: MutableList<ShoppingCartModel>
@@ -205,7 +200,7 @@ class RecyclerviewShoppingCartAdapter(
 
 
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return oldList[oldItemPosition].unicode === newList[newItemPosition].unicode
+            return oldList[oldItemPosition].unicode == newList[newItemPosition].unicode
         }
 
         override fun getOldListSize(): Int {
@@ -217,10 +212,11 @@ class RecyclerviewShoppingCartAdapter(
         }
 
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return oldList.get(oldItemPosition).equals(newList.get(newItemPosition))
+            return oldList.get(oldItemPosition) == (newList.get(newItemPosition))
         }
-
     }
+
+
 }
 
 

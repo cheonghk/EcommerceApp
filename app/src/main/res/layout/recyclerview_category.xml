@@ -6,11 +6,21 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar_category"
+        app:titleTextColor="@color/White"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/DarkGrey"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:id="@+id/recyclerview_category"/>
+        android:id="@+id/recyclerview_category"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_category"/>
 
 
     <LinearLayout

@@ -10,6 +10,8 @@ import com.example.myapplication.FireBase.ItemInfo_Firebase_Model
 import com.example.myapplication.R
 import com.example.myapplication.Retrofit.Request.Responses.ProductInfoList
 import com.example.myapplication.AppUtils.FragmentTransaction
+import com.example.myapplication.Main.CardViewController.Companion.ToolBarTitle
+import com.example.myapplication.Main.CardViewController.Companion.category
 import com.google.common.reflect.TypeToken
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -31,8 +33,8 @@ class CategoryActivity : AppCompatActivity() {
         setContentView(R.layout.fragment_category)
 
         var bundle : Bundle?=intent.extras
-        val getString = bundle!!.getInt("category")
-        initialize(getString!!)
+        val getInt = bundle!!.getInt(category)
+        initialize(getInt!!)
 
 
         FragmentTransaction.changeFragment(this,

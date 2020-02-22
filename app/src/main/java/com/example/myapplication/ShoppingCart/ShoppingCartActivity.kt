@@ -2,22 +2,16 @@ package com.example.myapplication.ShoppingCart
 
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.get
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.FireBase.FireBaseCollector
 import com.example.myapplication.FireBase.ItemInfo_Firebase_Model
 import com.example.myapplication.R
 import com.example.myapplication.ShoppingCart.Utils.FireStoreRetrivalUtils
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.android.synthetic.main.cardview_main.*
 import kotlinx.android.synthetic.main.shoppingcart.*
 
 class ShoppingCartActivity:  AppCompatActivity() {
@@ -25,7 +19,6 @@ class ShoppingCartActivity:  AppCompatActivity() {
     private lateinit var mAuth: FirebaseAuth
     private var mAuthListener: FirebaseAuth.AuthStateListener? = null
     private val mFireBaseCollector = FireBaseCollector()
-    private var userShoppingCartList = mutableListOf<ShoppingCartModel>()
     private var adapter :RecyclerviewShoppingCartAdapter? = null
     private var updateAllTotalAmount = 0.0
     private var user : FirebaseUser? = null
@@ -53,6 +46,7 @@ class ShoppingCartActivity:  AppCompatActivity() {
     }
 
     fun updateUI(isInitilize :Boolean) {
+        var userShoppingCartList = mutableListOf<ShoppingCartModel>()
         if (user != null) {   // Name, email address, and profile photo Url
             // val name = user.displayName
             //val email = user.email
@@ -65,36 +59,36 @@ class ShoppingCartActivity:  AppCompatActivity() {
                 .get().addOnSuccessListener { userItems ->
                     if (!userItems!!.isEmpty) {
                         val userItemList = userItems.documents
-                        userShoppingCartList.clear() //prevent repeatedly loading items when activity start
+                        //userShoppingCartList.clear() //prevent repeatedly loading items when activity start
                         for (i in userItemList) {
                             val cartItems = i.toObject(ShoppingCartModel::class.java)
                             userShoppingCartList.add(cartItems!!)}
-
                         if(isInitilize) {
                             adapter = RecyclerviewShoppingCartAdapter(userShoppingCartList, uid)
-                            //adapter!!.setData(userShoppingCartList)
+
                             recyclerview_shoppingcart.adapter = adapter
                             recyclerview_shoppingcart.visibility = View.VISIBLE
                         }else{
-                            recyclerview_shoppingcart.adapter!!.notifyDataSetChanged()
+                           adapter!!.setData(userShoppingCartList)
+                            //recyclerview_shoppingcart.adapter!!.notifyDataSetChanged()
                         }
 
-                        initTotalAmount()
+                        initTotalAmount(userShoppingCartList)
                         callBackFromAdapter()
 
                     }else{
-                        userShoppingCartList.clear()
-                        initTotalAmount()
+                        //userShoppingCartList.clear()
+                        initTotalAmount(userShoppingCartList)
                         textview_cartempty.visibility = View.VISIBLE
                         recyclerview_shoppingcart.visibility = View.INVISIBLE
-                        Log.i(TAG, "Retrival failed or cart is empty, size = : ${userShoppingCartList.size}")
+                       // Log.i(TAG, "Retrival failed or cart is empty, size = : ${userShoppingCartList.size}")
                     }
                 }.addOnFailureListener {
                     Log.i(TAG, " updateUI fail")
                 }
         }}
 
-    fun initTotalAmount(){
+    fun initTotalAmount(userShoppingCartList : MutableList<ShoppingCartModel>){
         var allTotalAmount : Double = 0.0
         var num :Int =0
         var price :Long = 0

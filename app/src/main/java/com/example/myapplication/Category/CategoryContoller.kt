@@ -171,7 +171,6 @@ class CategoryContoller(val view: View) {
                         registration = unicodeRef.addSnapshotListener { documentSnapshot, exce ->
                             if (documentSnapshot!!.exists()) {//run if item is already exist
 
-                                Log.i("update", "update")
                                 //find out the oringal number
                                 val shoppingModelObj =
                                     documentSnapshot.toObject(ShoppingCartModel::class.java)
@@ -199,7 +198,6 @@ class CategoryContoller(val view: View) {
                                 registration?.remove()
 
                             } else{
-                                Log.i("create", "create")
                                 //create new node if it is new item
                                 val itemInfo = ShoppingCartModel()
                                 itemInfo.unicode = itemList.unicode
@@ -212,8 +210,6 @@ class CategoryContoller(val view: View) {
                                 //add to cart
                                 itemsRef.document(itemList.unicode!!).set(itemInfo)
                                     .addOnSuccessListener {
-                                        Snackbar.make(view, "Added to cart", Snackbar.LENGTH_SHORT)
-                                            .show()
                                         Toast.makeText(
                                             view.context,
                                             "Added to cart",

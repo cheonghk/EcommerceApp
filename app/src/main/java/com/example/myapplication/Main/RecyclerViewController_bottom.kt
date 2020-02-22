@@ -20,11 +20,12 @@ import java.util.*
 
 
 class RecyclerViewController_bottom(val view: View, val mNestedScrollView : NestedScrollView) {
-    var itemList = mutableListOf<ItemInfo_Firebase_Model>()
+    private var itemList = mutableListOf<ItemInfo_Firebase_Model>()
     private val databaseHelper = FireBaseCollector()
     private var mDownY: Int = 0
     private var isLoading = false
-    private var itemList_refresh_isDisplayed = mutableListOf<ItemInfo_Firebase_Model>()
+    private var itemList_toBeDisplayed = mutableListOf<ItemInfo_Firebase_Model>()
+    //private var itemList_refresh_isDisplayed = mutableListOf<ItemInfo_Firebase_Model>()
     private var itemList_refresh_beingDisplayed = mutableListOf<ItemInfo_Firebase_Model>()
     private var adapter : RecyclerviewAdapter_bottom? = null
 
@@ -35,31 +36,24 @@ class RecyclerViewController_bottom(val view: View, val mNestedScrollView : Nest
                 override fun DataIsLoaded(theItemListModel: MutableList<ItemInfo_Firebase_Model>) {
                     itemList.addAll(theItemListModel)
                     initialiseItemList(2)
-                    adapter = RecyclerviewAdapter_bottom(itemList_refresh_isDisplayed)
-                    recyclerview_main_bottom.adapter = adapter
                 }
-
-            }
-            )
+            })
             recyclerview_main_bottom.layoutManager =
                 StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
-            refreshItemList_dragUp(2)
-            //intialiseStyle()
+
+           refreshItemList_dragUp(2)
         }
     }
 
-    /*fun intialiseStyle(){
-         swipeRefreshLayout.setColorSchemeResources(R.color.DarkGrey)
-         swipeRefreshLayout.setProgressBackgroundColorSchemeResource(android.R.color.white)
-     }*/
 
-    fun isDataAvailable(): Boolean {
+
+    fun checkDataIfAvailable(): Boolean {
         view.apply {
             if (itemList.size > 0) {
                 return true
-            } else if (itemList.size <= 0 || itemList_refresh_isDisplayed.size <= 0) {
+            } else if (itemList.size <= 0) {
                 textView_bottom.text =
-                    "Data retrive failed : itemList = ${itemList.size} \n itemList_refresh_isDisplayed = ${itemList_refresh_isDisplayed.size}"
+                    "Data retrive failed : itemList = ${itemList.size} \n itemList_refresh_isDisplayed = ${itemList.size}"
                 textView_bottom.visibility = View.VISIBLE
             }
             return false
@@ -67,7 +61,7 @@ class RecyclerViewController_bottom(val view: View, val mNestedScrollView : Nest
     }
 
     fun initialiseItemList(size: Int) {
-        if (!isDataAvailable()) {
+        if (!checkDataIfAvailable()) {
             return
         }
         itemList_refresh_beingDisplayed.addAll(itemList)
@@ -75,54 +69,56 @@ class RecyclerViewController_bottom(val view: View, val mNestedScrollView : Nest
         for (i in 0 until size) {
             if (itemList_refresh_beingDisplayed.size >= 1) {
                 var randomItem = Math.random() * itemList_refresh_beingDisplayed.size
-                itemList_refresh_isDisplayed.add(itemList_refresh_beingDisplayed[randomItem.toInt()])
+                itemList_toBeDisplayed.add(itemList_refresh_beingDisplayed[randomItem.toInt()])
                 itemList_refresh_beingDisplayed.removeAt(randomItem.toInt())
             }
         }
+        adapter = RecyclerviewAdapter_bottom(itemList_toBeDisplayed)
+        view.recyclerview_main_bottom.adapter = adapter
     }
 
     fun refreshItemList_dragUp(sizeAdd: Int) {
-        view.apply {
-            recyclerview_main_bottom.setOnTouchListener { v, event ->
-                //val touchSlop = ViewConfiguration.get(context).getScaledTouchSlop()
-                when (event.action) {
-                    MotionEvent.ACTION_DOWN -> {
-                        mDownY = event.rawY.toInt()
-                    }
-                    MotionEvent.ACTION_MOVE -> {
-                        if (mDownY != 0 && mDownY > event.rawY.toInt()) {
-                            if (!isLoading && !mNestedScrollView.canScrollVertically(1)) {
-                                textView_bottom.visibility = View.GONE
-                                isLoading(true)
-                                for (i in 0 until sizeAdd) {
-                                    val random = Random()
-                                    if (itemList_refresh_beingDisplayed.size >= 1) {
-                                        var randomItem =
-                                            random.nextInt(itemList_refresh_beingDisplayed.size)
-                                        itemList_refresh_isDisplayed.add(
-                                            itemList_refresh_beingDisplayed[randomItem]
-                                        )
-                                        itemList_refresh_beingDisplayed.removeAt(randomItem)
-                                    }
-                                }
-                                v.postDelayed({
-                                    // adapter.setData(itemList_refresh_isDisplayed)
-
-                                    recyclerview_main_bottom.adapter?.notifyDataSetChanged()
-                                    isLoading(false)
-                                    if (itemList_refresh_beingDisplayed.size == 0) {
-                                        textView_bottom.visibility = View.VISIBLE
-                                    }
-                                }, 500)
-                            }
+            view.apply {
+                recyclerview_main_bottom.setOnTouchListener { v, event ->
+                   var itemList_toBeAdded = mutableListOf<ItemInfo_Firebase_Model>()
+                    //val touchSlop = ViewConfiguration.get(context).getScaledTouchSlop()
+                    when (event.action) {
+                        MotionEvent.ACTION_DOWN -> {
+                            mDownY = event.rawY.toInt()
                         }
-                        mDownY = 0
+                        MotionEvent.ACTION_MOVE -> {
+                            if (mDownY != 0 && mDownY > event.rawY.toInt()) {
+                                if (!isLoading && !mNestedScrollView.canScrollVertically(1)) {
+                                    textView_bottom.visibility = View.GONE
+                                    isLoading(true)
+                                    for (i in 0 until sizeAdd) {
+                                        val random = Random()
+                                        if (itemList_refresh_beingDisplayed.size >= 1) {
+                                            var randomItem =
+                                                random.nextInt(itemList_refresh_beingDisplayed.size)
+                                            itemList_toBeAdded.add(
+                                                itemList_refresh_beingDisplayed[randomItem]
+                                            )
+                                            itemList_refresh_beingDisplayed.removeAt(randomItem)
+                                        }
+                                    }
+                                    v.postDelayed({
+                                        adapter!!.setData(itemList_toBeAdded)
+                                        isLoading(false)
+                                        if (itemList_refresh_beingDisplayed.size == 0) {
+                                            textView_bottom.visibility = View.VISIBLE
+                                        }
+                                    }, 500)
+                                }
+                            }
+                            mDownY = 0
+                        }
                     }
+                    true
                 }
-                true
             }
         }
-    }
+
 
         fun isLoading(recyclerViewisLoading: Boolean) {
             view.apply {
@@ -165,7 +161,7 @@ class RecyclerViewController_bottom(val view: View, val mNestedScrollView : Nest
                     val diffCallback =
                         RecyclerView_bottom_DiffCallback(itemList_refreshModels, itemList)
                     val diffResult = DiffUtil.calculateDiff(diffCallback)
-                    itemList_refreshModels.clear()
+                    //itemList_refreshModels.clear()
                     itemList_refreshModels.addAll(itemList)
                     diffResult.dispatchUpdatesTo(this)
                 }
@@ -189,7 +185,7 @@ class RecyclerViewController_bottom(val view: View, val mNestedScrollView : Nest
 
 
             override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-                return oldList[oldItemPosition].name === newList[newItemPosition].name
+                return oldList[oldItemPosition].unicode == newList[newItemPosition].name
             }
 
             override fun getOldListSize(): Int {
@@ -201,7 +197,7 @@ class RecyclerViewController_bottom(val view: View, val mNestedScrollView : Nest
             }
 
             override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-                return oldList.get(oldItemPosition).equals(newList.get(newItemPosition))
+                return oldList.get(oldItemPosition) == newList.get(newItemPosition)
             }
 
         }

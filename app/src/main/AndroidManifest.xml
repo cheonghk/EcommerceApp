@@ -23,6 +23,9 @@
         <activity android:name=".Login.LoginActivity" />
         <activity android:name=".Category.CategoryActivity" />
         <activity android:name=".ShoppingCart.ShoppingCartActivity" />
+        <meta-data
+            android:name="com.google.android.gms.wallet.api.enabled"
+            android:value="true" />
     </application>
 
 </manifest>

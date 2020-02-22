@@ -50,6 +50,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         drawerlayout.addDrawerListener(toggle)
         toggle.syncState()
 
+        swipeRefreshLayout.setColorSchemeResources(R.color.DarkGrey)
+        swipeRefreshLayout.setProgressBackgroundColorSchemeResource(android.R.color.white)
+
        swipeRefreshLayout.setOnRefreshListener {
             swipeRefreshLayout.isRefreshing = false
         }

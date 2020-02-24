@@ -1,25 +1,17 @@
 package com.example.myapplication.Login
 
 
-import android.content.Intent
-import android.opengl.Visibility
 import android.os.Bundle
 import android.text.TextUtils
-import android.util.Log
 import android.view.View
-import android.widget.TextView
 import android.widget.Toast
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
-import com.example.myapplication.Main.MainActivity
+import com.example.myapplication.Login.LoginActivity.Companion.KeyForgotResetPasswordFragment
 import com.example.myapplication.R
-import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.*
-import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.login_fragment.*
-import kotlinx.android.synthetic.main.registration_fragment.*
 
 
 class LoginFragment : Fragment(R.layout.login_fragment), View.OnClickListener {
@@ -31,6 +23,7 @@ class LoginFragment : Fragment(R.layout.login_fragment), View.OnClickListener {
         super.onCreate(savedInstanceState)
         mAuth = FirebaseAuth.getInstance()
     }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

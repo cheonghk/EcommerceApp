@@ -15,14 +15,17 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.fragment_login_host)
         if(savedInstanceState!=null){
-            mForgotResetPasswordFragment = supportFragmentManager.getFragment(savedInstanceState, "myFragmentName") as ForgotResetPasswordFragment
+            mForgotResetPasswordFragment = supportFragmentManager.getFragment(savedInstanceState, KeyForgotResetPasswordFragment) as ForgotResetPasswordFragment
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
         super.onSaveInstanceState(outState, outPersistentState)
-        supportFragmentManager.putFragment(outState, "myFragmentName", mForgotResetPasswordFragment)
+        supportFragmentManager.putFragment(outState, KeyForgotResetPasswordFragment, mForgotResetPasswordFragment)
     }
+
+    companion object {val TAG = "LoginActivity"
+    val KeyForgotResetPasswordFragment = "ForgotResetPasswordFragment" }
 
 }
 

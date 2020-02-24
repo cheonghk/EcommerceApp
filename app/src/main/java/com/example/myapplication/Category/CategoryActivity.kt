@@ -8,7 +8,6 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.myapplication.FireBase.FireBaseCollector
 import com.example.myapplication.FireBase.ItemInfo_Firebase_Model
 import com.example.myapplication.R
-import com.example.myapplication.Retrofit.Request.Responses.ProductInfoList
 import com.example.myapplication.AppUtils.FragmentTransaction
 import com.example.myapplication.Main.CardViewController.Companion.ToolBarTitle
 import com.example.myapplication.Main.CardViewController.Companion.category
@@ -70,8 +69,6 @@ class CategoryActivity : AppCompatActivity() {
         FirebaseAuth.getInstance().removeAuthStateListener { this }
     }
 
-
-
     fun initialize(category:Int){
         mFireBaseCollector.readData_CategoryContoller(object : FireBaseCollector.DataStatus {
             override fun DataIsLoaded(theItemListModel: MutableList<ItemInfo_Firebase_Model>) {
@@ -85,7 +82,7 @@ class CategoryActivity : AppCompatActivity() {
 
     }
 
-
+/*
     @Throws(IOException::class)
     fun getAssetJsonData_internal(context: Context):ProductInfoList {
         val json: String
@@ -98,7 +95,7 @@ class CategoryActivity : AppCompatActivity() {
         val type: Type = object : TypeToken<ProductInfoList>(){}.getType()
         val productInfoList: ProductInfoList = Gson().fromJson(data, type)
         return productInfoList
-    }
+    }*/
 
    /* fun getRetrofitData() {
 

@@ -31,8 +31,6 @@ class ShoppingCartActivity:  AppCompatActivity() {
 
         }
 
-
-
     override fun onStart() {
         super.onStart()
         initUserStatus()
@@ -70,18 +68,15 @@ class ShoppingCartActivity:  AppCompatActivity() {
                             recyclerview_shoppingcart.visibility = View.VISIBLE
                         }else{
                            adapter!!.setData(userShoppingCartList)
-                            //recyclerview_shoppingcart.adapter!!.notifyDataSetChanged()
                         }
 
                         initTotalAmount(userShoppingCartList)
                         callBackFromAdapter()
 
                     }else{
-                        //userShoppingCartList.clear()
                         initTotalAmount(userShoppingCartList)
                         textview_cartempty.visibility = View.VISIBLE
                         recyclerview_shoppingcart.visibility = View.INVISIBLE
-                       // Log.i(TAG, "Retrival failed or cart is empty, size = : ${userShoppingCartList.size}")
                     }
                 }.addOnFailureListener {
                     Log.i(TAG, " updateUI fail")
@@ -154,14 +149,10 @@ class ShoppingCartActivity:  AppCompatActivity() {
         if(canbecheckout){
             checkoutBttn.isClickable = true
             checkoutBttn.alpha = 1f
-            //checkoutBttn.setOnClickListener {  }
         }
         else{checkoutBttn.alpha = 0.3f
             checkoutBttn.isClickable = false}
     }
-
-
-
 
     override fun onStop() {
         super.onStop()

@@ -17,7 +17,7 @@ tools:layout="@layout/recyclerview_category" >
 
     <dialog
         android:id="@+id/productImageSlideFragment2"
-        android:name="com.example.myapplication.Category.ProductImageSlideFragment"
+        android:name="com.example.myapplication.Category.ProductImageSlideDialogFragment"
         android:label="fragment_image_dialog"
         tools:layout="@layout/fragment_category_dialog" />
 

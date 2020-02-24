@@ -1,7 +1,6 @@
 package com.example.myapplication.Category
 
 import android.content.Intent
-import android.os.CountDownTimer
 import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
@@ -14,7 +13,6 @@ import com.bumptech.glide.Glide
 import com.example.myapplication.FireBase.ItemInfo_Firebase_Model
 import com.example.myapplication.Login.LoginActivity
 import com.example.myapplication.R
-import com.example.myapplication.Retrofit.Request.Responses.ItemInfo
 import com.example.myapplication.ShoppingCart.ShoppingCartModel
 import com.example.myapplication.ShoppingCart.Utils.FireStoreRetrivalUtils
 import com.google.android.material.snackbar.Snackbar
@@ -144,7 +142,7 @@ class CategoryContoller(val view: View) {
 
 
             fun showImageSlideDialog(itemList: ItemInfo_Firebase_Model) {
-                val mProductImageSlideFragment = ProductImageSlideFragment(itemList)
+                val mProductImageSlideFragment = ProductImageSlideDialogFragment(itemList)
                 mProductImageSlideFragment.show(
                     (view.context as CategoryActivity).getSupportFragmentManager(),
                     ""

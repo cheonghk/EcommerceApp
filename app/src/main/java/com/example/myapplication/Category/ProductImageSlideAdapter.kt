@@ -1,14 +1,15 @@
 package com.example.myapplication.Category
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.DrawableRes
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.myapplication.R
 import kotlinx.android.synthetic.main.fragment_category_dialog.view.*
 import kotlinx.android.synthetic.main.imageview_dialog_small.view.*
-
 
 
 class ProductImageSlideAdapter(val itemUrlList: MutableList<String>, val hostView: View) : RecyclerView.Adapter<ProductImageSlideAdapter.ProductImageSlideViewHolder>() {
@@ -45,7 +46,6 @@ class ProductImageSlideAdapter(val itemUrlList: MutableList<String>, val hostVie
             Glide.with(view.context).load(itemListModel)
               .into(view.image_container_diglog_small)
             //Picasso.get().load(itemListModel).into(view.imageview_categorydialog_large)
-
         }
     }
 }

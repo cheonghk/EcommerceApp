@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:layout_marginHorizontal="50dp"
     android:layout_marginVertical="150dp"
-    tools:context=".Category.ProductImageSlideFragment">
+    tools:context=".Category.ProductImageSlideDialogFragment">
 
     <LinearLayout
         android:layout_width="match_parent"

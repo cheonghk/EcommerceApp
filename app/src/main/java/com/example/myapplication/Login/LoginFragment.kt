@@ -8,7 +8,6 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
-import com.example.myapplication.Login.LoginActivity.Companion.KeyForgotResetPasswordFragment
 import com.example.myapplication.R
 import com.google.firebase.auth.*
 import kotlinx.android.synthetic.main.login_fragment.*
@@ -23,7 +22,6 @@ class LoginFragment : Fragment(R.layout.login_fragment), View.OnClickListener {
         super.onCreate(savedInstanceState)
         mAuth = FirebaseAuth.getInstance()
     }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -89,16 +87,5 @@ class LoginFragment : Fragment(R.layout.login_fragment), View.OnClickListener {
     companion object
 
     val TAG = "Fragment_nav_login"
-/* override fun onTouch(v: View?, event: MotionEvent?): Boolean {
-     when (event?.action) {
-         MotionEvent.ACTION_DOWN -> {
-             when (v) {
-                 create_acc -> create_acc.animation
-
-             }
-         }
-     }
-     return true
- }*/
 }
 

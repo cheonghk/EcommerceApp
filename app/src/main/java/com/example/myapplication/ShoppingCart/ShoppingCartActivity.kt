@@ -85,8 +85,8 @@ class ShoppingCartActivity:  AppCompatActivity() {
 
     fun initTotalAmount(userShoppingCartList : MutableList<ShoppingCartModel>){
         var allTotalAmount : Double = 0.0
-        var num :Int =0
-        var price :Long = 0
+        var num : Int
+        var price :Long
 
         if(userShoppingCartList.size==0){ //no item, empty cart
             totalAmountText.text = "$" + allTotalAmount.toString()
@@ -98,7 +98,7 @@ class ShoppingCartActivity:  AppCompatActivity() {
             var category = userShoppingCartList.get(position).category
             var subcategory_position = userShoppingCartList.get(position).sub_category
             var totalItems = userShoppingCartList.get(position).totalItems
-            var unicode = userShoppingCartList.get(position).unicode
+            //var unicode = userShoppingCartList.get(position).unicode
 
             mFireBaseCollector.readData_userShoppingCart(object :
                 FireBaseCollector.ShoppingCartDataStatus {
@@ -156,7 +156,7 @@ class ShoppingCartActivity:  AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-        FirebaseAuth.getInstance().removeAuthStateListener {this}
+        FirebaseAuth.getInstance().removeAuthStateListener {}
     }
 
     companion object const val TAG = "ShoppingCartActivity"

@@ -31,7 +31,7 @@ class CategoryFragment : Fragment(R.layout.recyclerview_category) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val intent = activity!!.intent
-        var bundle : Bundle?=intent.extras
+        val bundle : Bundle?=intent.extras
         val getString = bundle!!.getString(CardViewController.ToolBarTitle)
         view.toolbar_category.title = getString
 
@@ -39,11 +39,11 @@ class CategoryFragment : Fragment(R.layout.recyclerview_category) {
 
         bttn_to_shoppingcart_from_category.setOnClickListener {
             if (mAuth.currentUser != null) {
-                val intent = Intent(it.context, ShoppingCartActivity::class.java)
-                startActivity(intent)
+                val mIntent = Intent(it.context, ShoppingCartActivity::class.java)
+                startActivity(mIntent)
             } else {
-                val intent = Intent(it.context, LoginActivity::class.java)
-                startActivity(intent)
+                val mIntent = Intent(it.context, LoginActivity::class.java)
+                startActivity(mIntent)
 
             }
         }
@@ -66,7 +66,7 @@ class CategoryFragment : Fragment(R.layout.recyclerview_category) {
 
     override fun onStop() {
         super.onStop()
-        FirebaseAuth.getInstance().removeAuthStateListener { this }
+        FirebaseAuth.getInstance().removeAuthStateListener {}
     }
 
 

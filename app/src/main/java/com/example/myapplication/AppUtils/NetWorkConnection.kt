@@ -8,7 +8,7 @@ object NetWorkConnection {
     fun checkNetWorkStatus(context: Context)
     {
         val connMgr =
-            context!!.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val activeNetwork = connMgr.activeNetwork
         //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         if (activeNetwork != null) {

@@ -33,7 +33,7 @@ class CategoryActivity : AppCompatActivity() {
 
         var bundle : Bundle?=intent.extras
         val getInt = bundle!!.getInt(category)
-        initialize(getInt!!)
+        initialize(getInt)
 
 
         FragmentTransaction.changeFragment(this,
@@ -66,13 +66,13 @@ class CategoryActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-        FirebaseAuth.getInstance().removeAuthStateListener { this }
+        FirebaseAuth.getInstance().removeAuthStateListener {}
     }
 
     fun initialize(category:Int){
         mFireBaseCollector.readData_CategoryContoller(object : FireBaseCollector.DataStatus {
-            override fun DataIsLoaded(theItemListModel: MutableList<ItemInfo_Firebase_Model>) {
-                itemList.addAll(theItemListModel)
+            override fun DataIsLoaded(userShoppingCartInfo: MutableList<ItemInfo_Firebase_Model>) {
+                itemList.addAll(userShoppingCartInfo)
                 recyclerview_category.adapter =
                     CategoryContoller.CategoryRecyclerviewAdapter(
                         itemList, category)

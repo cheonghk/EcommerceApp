@@ -1,6 +1,6 @@
 This is a simple e-commerce like project, it archived following functions:
 
-Login - indclucing resgiatration and sending email for forgot password functions, the e-mail can be sent by interval at least 60 seconds even you close and re-open the app
+Login - indclucing resgiatration and sending email for forgot password functions, the e-mail can be re-sent at interval at least 60 seconds even you close and re-open the app
 
 Category, you can view all of same kind of items in a page, to adding items to shopping cart, you have to first get login otherwise it bring you to login page, if you adding item which already in your cart, it update the item numbers instead creating new one.
 

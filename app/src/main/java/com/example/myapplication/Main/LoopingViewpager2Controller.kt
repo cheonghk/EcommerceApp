@@ -36,21 +36,10 @@ class LoopingViewpager2Controller(private val itemList: ArrayList<String>, val v
             dotsIndicator.setViewPager(viewPager2, itemList)
             viewPager2.adapter?.registerAdapterDataObserver(dotsIndicator.adapterdataObserver)
             // viewPager2.setCurrentItem(initPage)
-         //   pageAutoSlide(false)
             setOnToughListener()
         }
     }
 
-    fun pageAutoSlide(ifAutoSlide:Boolean) {
-            var update = Runnable {view.apply {
-                viewPager2.setCurrentItem(viewPager2.currentItem + 1, true)}}
-            slideTimer.schedule(object : TimerTask() {
-                override fun run() {
-                    handler.post(update)
-                   // setOnToughListener()     //not function
-                }
-            }, delay, period)
-        }
 
     fun setOnToughListener() = view.apply {
         viewPager2.setOnTouchListener { _, event ->

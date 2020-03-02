@@ -31,7 +31,7 @@ class FireBaseCollector {
 
                     var newItemListWrapperIndex = 0
                     for (j in 1 until theChild.childrenCount + 1) {
-                        var newItemList : ItemInfo_Firebase_Model? = null
+                        var newItemList : ItemInfo_Firebase_Model
                         unicode = null
                         name = null
                         price = null

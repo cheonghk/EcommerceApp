@@ -1,5 +1,7 @@
 package com.example.myapplication.Login
 
+import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
@@ -32,18 +34,20 @@ class RegistrationFragment : Fragment(R.layout.registration_fragment), View.OnCl
         cancel_button.setOnClickListener(this)
     }
 
+
+
+
     override fun onClick(v: View?) {
             val email = email_re.text.toString().trim()
             val password = password_re.text.toString().trim()
             val confirm_password = confirm_password_re.text.toString().trim()
             when (v) {
                 register_button -> createUserWithEmailAndPassword(email, password, confirm_password)
-                cancel_button -> activity!!.onBackPressed()
+                cancel_button -> activity?.onBackPressed()
                 // forgot_pw ->
             }
 
     }
-
 
     fun createUserWithEmailAndPassword(email: String, password: String, confirm_password: String) {
         email_re.error = null
@@ -68,8 +72,8 @@ class RegistrationFragment : Fragment(R.layout.registration_fragment), View.OnCl
                 return
             }
             if (!password.equals(confirm_password)) {
-                Toast.makeText(this.activity, "Confirm password do not match", Toast.LENGTH_SHORT)
-                    .show()
+                confirm_password_re.error = "Passwords do not match"
+                confirm_password_re.performClick()
                 confirm_password_re.requestFocus()
                 return
             }
@@ -78,13 +82,13 @@ class RegistrationFragment : Fragment(R.layout.registration_fragment), View.OnCl
             progressBar_registration.visibility = View.VISIBLE
             mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    Toast.makeText(this.activity, "Create account sucessful", Toast.LENGTH_SHORT)
+                    Toast.makeText(context, "Create account successfully", Toast.LENGTH_SHORT)
                         .show()
                     Log.w(TAG, "createUserWithEmail:success", task.exception)
-                    val user = mAuth.currentUser
-                    val intent = Intent(this.activity, MainActivity::class.java)
+                    //val user = mAuth.currentUser
+                    val intent = Intent(context, MainActivity::class.java)
                     startActivity(intent)
-                    activity!!.finish()
+                    activity?.finish()
                 } else {
                     try {
                         throw task.exception!!
@@ -112,6 +116,11 @@ class RegistrationFragment : Fragment(R.layout.registration_fragment), View.OnCl
             register_button.isClickable = true
             progressBar_registration.visibility = View.INVISIBLE
         }
+
+    override fun onStop() {
+        super.onStop()
+        mAuth.removeAuthStateListener {  }
+    }
 
     companion object val TAG = "RegistrationFragment "
 }

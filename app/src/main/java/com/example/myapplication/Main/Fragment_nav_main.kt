@@ -4,7 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
-import butterknife.Unbinder
+//import butterknife.Unbinder
 import com.example.myapplication.R
 import kotlinx.android.synthetic.main.activity_main.view.*
 import kotlinx.android.synthetic.main.imageslide_main.*

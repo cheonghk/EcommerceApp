@@ -55,13 +55,9 @@ class CategoryContoller(val view: View) {
                 it.bindItemList(itemList[position])
                 it.selectedNumCalcalculate(itemList[position])
                 it.view.product_image_category.setOnClickListener {
-                    when (position) {
-                        else -> {
                             holder.showImageSlideDialog(
                                 itemList.get(position)
                             )
-                        }
-                    }
                 }
 
                 it.view.bttn_addtocart.setOnClickListener {
@@ -166,7 +162,7 @@ class CategoryContoller(val view: View) {
                             FireStoreRetrivalUtils.mFirebaseFirestore(uid).document(unicode!!)
 
 
-                        registration = unicodeRef.addSnapshotListener { documentSnapshot, exce ->
+                        registration = unicodeRef.addSnapshotListener { documentSnapshot, _ ->
                             if (documentSnapshot!!.exists()) {//run if item is already exist
 
                                 //find out the oringal number

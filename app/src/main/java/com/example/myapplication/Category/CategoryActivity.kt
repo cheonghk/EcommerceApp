@@ -2,71 +2,33 @@ package com.example.myapplication.Category
 
 //import com.example.myapplication.ViewModel.ItemInfoViewModel
 
-import android.content.Context
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.myapplication.FireBase.FireBaseCollector
 import com.example.myapplication.FireBase.ItemInfo_Firebase_Model
 import com.example.myapplication.R
 import com.example.myapplication.AppUtils.FragmentTransaction
-import com.example.myapplication.Main.CardViewController.Companion.ToolBarTitle
 import com.example.myapplication.Main.CardViewController.Companion.category
-import com.google.common.reflect.TypeToken
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.gson.Gson
 import kotlinx.android.synthetic.main.recyclerview_category.*
-import java.io.IOException
-import java.lang.reflect.Type
 
 class CategoryActivity : AppCompatActivity() {
 
     private val mFireBaseCollector = FireBaseCollector()
-    private lateinit var mAuth: FirebaseAuth
-    private var mAuthListener: FirebaseAuth.AuthStateListener? = null
     private var itemList = mutableListOf<ItemInfo_Firebase_Model>()
-    private var currentUser: FirebaseUser? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.fragment_category)
+        setContentView(R.layout.fragment_category_host)
 
         var bundle : Bundle?=intent.extras
         val getInt = bundle!!.getInt(category)
         initialize(getInt)
 
-
-        FragmentTransaction.changeFragment(this,
-            R.id.fragment_container_category,
-            CategoryFragment()
-        )
-        mAuth = FirebaseAuth.getInstance()
                 //getAssetJsonData_internal(this)
 
         //getRetrofitData() //for retrofit
 
        // recyclerview_category.adapter = CategoryContoller.CategoryRecyclerView_Adapter(getAssetJsonData_internal(this))
-    }
-
-    override fun onResume() {
-        super.onResume()
-        if (mAuthListener != null) {
-            mAuth.addAuthStateListener(mAuthListener!!)
-        }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        mAuthListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
-            currentUser = firebaseAuth.currentUser
-
-            // updateUI(user)
-        }
-    }
-
-    override fun onStop() {
-        super.onStop()
-        FirebaseAuth.getInstance().removeAuthStateListener {}
     }
 
     fun initialize(category:Int){

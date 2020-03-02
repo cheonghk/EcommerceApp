@@ -179,7 +179,7 @@ class RecyclerviewShoppingCartAdapter(
             fun operateDeleteItem(callBack: CallBack, uid: String) {
             val ref = FireStoreRetrivalUtils.mFirebaseFirestore(uid).document(unicode!!)
             ref.delete().addOnSuccessListener {
-                callBack?.updateUIAfterDeletedItem()
+                callBack.updateUIAfterDeletedItem()
             }.addOnFailureListener { e ->
                 Toast.makeText(
                     view.context,

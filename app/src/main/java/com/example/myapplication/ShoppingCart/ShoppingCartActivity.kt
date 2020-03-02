@@ -4,17 +4,56 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapplication.FireBase.FireBaseCollector
 import com.example.myapplication.FireBase.ItemInfo_Firebase_Model
 import com.example.myapplication.R
 import com.example.myapplication.ShoppingCart.Utils.FireStoreRetrivalUtils
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.wallet.PaymentsClient
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.lyra.sampleandroidgooglepay.payment.AbstractLyraActivity
+import com.lyra.sampleandroidgooglepay.payment.LyraPayment
+import com.lyra.sampleandroidgooglepay.payment.PaymentData
+import com.lyra.sampleandroidgooglepay.payment.PaymentResult
 import kotlinx.android.synthetic.main.shoppingcart.*
+import java.util.*
 
-class ShoppingCartActivity:  AppCompatActivity() {
+
+// Merchant server url
+// FIXME: change by the right payment server
+private const val SERVER_URL = "<REPLACE_ME>"
+
+// Gateway merchant ID
+// FIXME: change by the right identifier
+private const val GATEWAY_MERCHANT_ID = "<REPLACE_ME>"
+
+// One or more card networks you support also supported by the Google Pay API
+// FIXME: change by what you can supported
+private const val SUPPORTED_NETWORKS = "AMEX, VISA, MASTERCARD, DISCOVER, JCB"
+
+// Environment TEST or PRODUCTION, refer to documentation for more information
+// FIXME: change by your targeted environment
+private const val PAYMENT_MODE = "TEST"
+
+
+/**
+ * Main activity
+ *
+ * This main activity allows to user to fill payment data (amount, order id, so on)
+ * Before retrieving these payment data:
+ * <li>Initialize payment context with LyraPayment.init(activity: Activity, mode: String, supportedNetworks: String) method</li>
+ * <li>Check payment possibility with LyraPayment.isPaymentPossible(paymentsClient: PaymentsClient) method</li>
+ * After retrieving these payment data:
+ * <li>LyraPayment.execute(payload: JSONObject, serverUrl: String, gatewayMerchantId: String, activity: Activity, paymentsClient: PaymentsClient) is executed</li>.
+ * <li>The payment result is handled by handlePaymentResult(result: PaymentResult) method</li>
+ *
+ * For readability purposes in this example, we do not use logs
+ * @author Lyra Network
+ */
+
+class ShoppingCartActivity: AbstractLyraActivity()  {
 
     private lateinit var mAuth: FirebaseAuth
     private var mAuthListener: FirebaseAuth.AuthStateListener? = null
@@ -22,6 +61,9 @@ class ShoppingCartActivity:  AppCompatActivity() {
     private var adapter :RecyclerviewShoppingCartAdapter? = null
     private var updateAllTotalAmount = 0.0
     private var user : FirebaseUser? = null
+    private var email : String? = null
+
+    private lateinit var paymentsClient: PaymentsClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,6 +71,24 @@ class ShoppingCartActivity:  AppCompatActivity() {
         mAuth = FirebaseAuth.getInstance()
         recyclerview_shoppingcart.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 
+
+        // Environment TEST or PRODUCTION
+        paymentsClient = LyraPayment.init(this, PAYMENT_MODE, SUPPORTED_NETWORKS)
+
+        LyraPayment.isPaymentPossible(paymentsClient).addOnCompleteListener { task ->
+            try {
+                val result = task.getResult(ApiException::class.java)
+                if (result!!) {
+                    // show Google Pay as a payment option
+                    //payBtn.visibility = View.VISIBLE
+                } else {
+                    Toast.makeText(this, "isPaymentPossible return false", Toast.LENGTH_LONG).show()
+                }
+            } catch (e: ApiException) {
+                Toast.makeText(this, "isPaymentPossible exception catched", Toast.LENGTH_LONG).show()
+            }
+
+        }
         }
 
     override fun onStart() {
@@ -47,11 +107,13 @@ class ShoppingCartActivity:  AppCompatActivity() {
         var userShoppingCartList = mutableListOf<ShoppingCartModel>()
         if (user != null) {   // Name, email address, and profile photo Url
             // val name = user.displayName
-            //val email = user.email
+            val email = user?.email
             // val photoUrl = user.photoUrl
             // Check if user's email is verified
             //val emailVerified = user.isEmailVerified
             val uid = user?.uid
+
+            this.email = email
 
             FireStoreRetrivalUtils.mFirebaseFirestore(uid!!)
                 .get().addOnSuccessListener { userItems ->
@@ -90,7 +152,7 @@ class ShoppingCartActivity:  AppCompatActivity() {
 
         if(userShoppingCartList.size==0){ //no item, empty cart
             totalAmountText.text = "$" + allTotalAmount.toString()
-            checkOut(false)
+            checkOutBttnIsClickable(false)
             return
         }
 
@@ -119,7 +181,7 @@ class ShoppingCartActivity:  AppCompatActivity() {
                 }
             })
         }
-        checkOut(true)
+        checkOutBttnIsClickable(true)
         }
 
     fun callBackFromAdapter(){
@@ -145,7 +207,7 @@ class ShoppingCartActivity:  AppCompatActivity() {
         }
     }
 
-    fun checkOut(canbecheckout : Boolean){
+    fun checkOutBttnIsClickable(canbecheckout : Boolean){
         if(canbecheckout){
             checkoutBttn.isClickable = true
             checkoutBttn.alpha = 1f
@@ -159,5 +221,51 @@ class ShoppingCartActivity:  AppCompatActivity() {
         FirebaseAuth.getInstance().removeAuthStateListener {}
     }
 
-    companion object const val TAG = "ShoppingCartActivity"
-}
+
+    //**************payment methods************
+
+
+    fun onPayClick(view: View) {
+      //  progressBar.visibility = View.VISIBLE
+
+        LyraPayment.execute(createPaymentPayload(), SERVER_URL, GATEWAY_MERCHANT_ID, this, paymentsClient)
+    }
+
+    /**
+     * Create PaymentData object used as payload of HTTP request to Merchant server
+     *
+     * @return PaymentData
+     */
+    private fun createPaymentPayload(): PaymentData {
+        val paymentData = PaymentData()
+        paymentData.setOrderId(random())
+        paymentData.setAmount(updateAllTotalAmount.toString())
+        paymentData.setEmail(email)
+
+        // HK's currency code
+        paymentData.setCurrency("344")
+
+        return paymentData
+    }
+
+    override fun handlePaymentResult(result: PaymentResult) {
+        //progressBar.visibility = View.GONE
+        if (result.isSuccess()) {
+            Toast.makeText(this, "Payment successful", Toast.LENGTH_LONG).show()
+        } else {
+            Toast.makeText(
+                this,
+                "Payment failed. errorCode = " + result.getErrorCode() + " and cause = " + result.getCause(),
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+
+    //************payment methods****************
+
+    companion object {const val TAG = "ShoppingCartActivity"
+        fun random(): String? {
+            val generator = Random()
+            return (generator.nextInt(20) + 32).toString()
+        }
+}}

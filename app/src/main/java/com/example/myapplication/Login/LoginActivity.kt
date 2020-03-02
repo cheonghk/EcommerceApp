@@ -9,7 +9,7 @@ import com.example.myapplication.R
 class LoginActivity : AppCompatActivity() {
 
 
-    private var mForgotResetPasswordFragment  =  ForgotResetPasswordFragment()
+    //private var mForgotResetPasswordFragment  =  ForgotResetPasswordFragment()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,11 +23,11 @@ class LoginActivity : AppCompatActivity() {
 
     }
 
-    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
+    /*override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
         super.onSaveInstanceState(outState, outPersistentState)
 
-        //supportFragmentManager.putFragment(outState, ForgotResetPasswordFragment.EndTime, mForgotResetPasswordFragment)
-    }
+        supportFragmentManager.putFragment(outState, ForgotResetPasswordFragment.EndTime, mForgotResetPasswordFragment)
+    }*/
 
     companion object {val TAG = "LoginActivity"
   }

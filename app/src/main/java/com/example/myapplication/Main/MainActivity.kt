@@ -100,7 +100,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onStop() {
         super.onStop()
-        FirebaseAuth.getInstance().removeAuthStateListener { this }
+        FirebaseAuth.getInstance().removeAuthStateListener {}
     }
 
 
@@ -119,7 +119,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             val email = user.email
             // val photoUrl = user.photoUrl
             // Check if user's email is verified
-            val emailVerified = user.isEmailVerified
+            //val emailVerified = user.isEmailVerified
 
             // The user's ID, unique to the Firebase project. Do NOT use this value to
             // authenticate with your backend server, if you have one. Use
@@ -145,10 +145,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         Toast.makeText(this, "Signed out", Toast.LENGTH_SHORT).show()
     }
 
-    companion object {
-        private const val TAG = "Log_MainActivity"
-    }
-
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.navigation_home -> {
@@ -169,6 +165,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         drawerlayout.closeDrawers()
         return true
+    }
+
+    companion object {
+        private const val TAG = "Log_MainActivity"
     }
 
 }

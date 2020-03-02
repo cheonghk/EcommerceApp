@@ -9,7 +9,7 @@
 android:id="@+id/categoryFragment"
 android:name="com.example.myapplication.Category.CategoryFragment"
 android:label="fragment_recycler_category"
-tools:layout="@layout/recyclerview_category" >
+tools:layout="@layout/recyclerview_category">
     <action
         android:id="@+id/action_categoryFragment_to_productImageSlideFragment2"
         app:destination="@id/productImageSlideFragment2" />

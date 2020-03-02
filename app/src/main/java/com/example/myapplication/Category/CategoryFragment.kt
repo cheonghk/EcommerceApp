@@ -22,7 +22,6 @@ class CategoryFragment : Fragment(R.layout.recyclerview_category) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         mAuth = FirebaseAuth.getInstance()
 
 

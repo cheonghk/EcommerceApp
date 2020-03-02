@@ -1,7 +1,5 @@
 package com.example.myapplication.Login
 
-import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
@@ -16,7 +14,6 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import kotlinx.android.synthetic.main.registration_fragment.*
-import org.jetbrains.anko.startActivity
 
 
 class RegistrationFragment : Fragment(R.layout.registration_fragment), View.OnClickListener {
@@ -34,20 +31,18 @@ class RegistrationFragment : Fragment(R.layout.registration_fragment), View.OnCl
         cancel_button.setOnClickListener(this)
     }
 
-
-
-
     override fun onClick(v: View?) {
             val email = email_re.text.toString().trim()
             val password = password_re.text.toString().trim()
             val confirm_password = confirm_password_re.text.toString().trim()
             when (v) {
                 register_button -> createUserWithEmailAndPassword(email, password, confirm_password)
-                cancel_button -> activity?.onBackPressed()
-                // forgot_pw ->
+                cancel_button ->{ activity?.onBackPressed() }
             }
 
     }
+
+
 
     fun createUserWithEmailAndPassword(email: String, password: String, confirm_password: String) {
         email_re.error = null
@@ -82,11 +77,11 @@ class RegistrationFragment : Fragment(R.layout.registration_fragment), View.OnCl
             progressBar_registration.visibility = View.VISIBLE
             mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    Toast.makeText(context, "Create account successfully", Toast.LENGTH_SHORT)
+                    Toast.makeText(activity, "Create account successfully", Toast.LENGTH_SHORT)
                         .show()
                     Log.w(TAG, "createUserWithEmail:success", task.exception)
                     //val user = mAuth.currentUser
-                    val intent = Intent(context, MainActivity::class.java)
+                    val intent = Intent(activity, MainActivity::class.java)
                     startActivity(intent)
                     activity?.finish()
                 } else {
@@ -94,27 +89,26 @@ class RegistrationFragment : Fragment(R.layout.registration_fragment), View.OnCl
                         throw task.exception!!
                     } catch (weakPassword: FirebaseAuthWeakPasswordException) {
                         Toast.makeText(
-                            this.activity,
+                            activity,
                             "Password must not be shorter than 6 words",
                             Toast.LENGTH_SHORT
                         ).show()
                     } catch (malformedEmail: FirebaseAuthInvalidCredentialsException) {
-                        Toast.makeText(this.activity, "Malformed email", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(activity, "Malformed email", Toast.LENGTH_SHORT).show()
                     } catch (existEmail: FirebaseAuthUserCollisionException) {
                         email_re.error = "This email was regitstered"
                         email_re.requestFocus()
                     } catch (e: Exception) {
-                        Toast.makeText(this.activity, "${e.message}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(activity, "${e.message}", Toast.LENGTH_SHORT).show()
                     }
+                    cancel_button.isClickable = true
+                    register_button.isClickable = true
+                    progressBar_registration.visibility = View.INVISIBLE
                 }
                 // [START_EXCLUDE]
                 //   hideProgressBar()
                 // [END_EXCLUDE]
             }
-            // [END create_user_with_email]
-            cancel_button.isClickable = true
-            register_button.isClickable = true
-            progressBar_registration.visibility = View.INVISIBLE
         }
 
     override fun onStop() {

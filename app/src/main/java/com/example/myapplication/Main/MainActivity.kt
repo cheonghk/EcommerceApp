@@ -24,17 +24,16 @@ import org.jetbrains.anko.startActivity
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     //val vb = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
     //vb.vibrate(VibrationEffect.createOneShot(1000, VibrationEffect.DEFAULT_AMPLITUDE));
-    private var context: Context? = null
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var mAuth: FirebaseAuth
     private var mAuthListener: FirebaseAuth.AuthStateListener? = null
     private lateinit var loginStatusText: TextView
-    private var backPress = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        this.context = this
+
+
         NetWorkConnection.checkNetWorkStatus(this)
         mAuth = FirebaseAuth.getInstance()
 
@@ -169,6 +168,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     companion object {
         private const val TAG = "Log_MainActivity"
+
     }
 
 }

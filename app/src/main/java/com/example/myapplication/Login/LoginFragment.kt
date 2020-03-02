@@ -44,6 +44,9 @@ class LoginFragment : Fragment(R.layout.login_fragment), View.OnClickListener {
     fun signInWithEmailAndPassword(email: String, password: String) {
         progressBar_login.visibility = View.VISIBLE
         if (!TextUtils.isEmpty(email) && !TextUtils.isEmpty(password)) {
+            loginButton.isClickable=false
+            create_acc.isClickable=false
+            forgot_pw.isClickable=false
             mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
@@ -52,7 +55,7 @@ class LoginFragment : Fragment(R.layout.login_fragment), View.OnClickListener {
                             this.activity, "Welcome! ${user!!.email}",
                             Toast.LENGTH_SHORT
                         ).show()
-                        activity!!.onBackPressed()
+                       // activity!!.onBackPressed()
                         //val intent = Intent(this.activity, MainActivity::class.java)
                       //  startActivity(intent)
                         activity!!.finish()
@@ -70,6 +73,9 @@ class LoginFragment : Fragment(R.layout.login_fragment), View.OnClickListener {
                         //      this.activity, "Password incorrect",
                         //      Toast.LENGTH_SHORT
                         //   ).show()
+                        loginButton.isClickable=true
+                        create_acc.isClickable=true
+                        forgot_pw.isClickable=true
                     }
                     // [START_EXCLUDE]
                     //  hideProgressBar()
@@ -78,7 +84,7 @@ class LoginFragment : Fragment(R.layout.login_fragment), View.OnClickListener {
             // [END sign_in_with_email]
             // [END create_user_with_email]
         } else {
-            Toast.makeText(this.activity, "Please input email and password", Toast.LENGTH_SHORT)
+            Toast.makeText(activity, "Please input email and password", Toast.LENGTH_SHORT)
                 .show()
         }
         progressBar_login.visibility = View.INVISIBLE

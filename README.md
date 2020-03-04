@@ -1,4 +1,4 @@
-This is a simple e-commerce like project, it archived following functions:
+This is a simple e-commerce model project, it archived following functions:
 
 Login - indclucing resgiatration and sending email for forgot password functions, the e-mail can be re-sent at interval at least 60 seconds even you close and re-open the app.
 

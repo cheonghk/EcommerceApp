@@ -7,7 +7,6 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.myapplication.FireBase.FireBaseCollector
 import com.example.myapplication.FireBase.ItemInfo_Firebase_Model
 import com.example.myapplication.R
-import com.example.myapplication.AppUtils.FragmentTransaction
 import com.example.myapplication.Main.CardViewController.Companion.category
 import kotlinx.android.synthetic.main.recyclerview_category.*
 

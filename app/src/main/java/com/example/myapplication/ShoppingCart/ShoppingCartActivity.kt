@@ -7,16 +7,16 @@ import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapplication.FireBase.FireBaseCollector
 import com.example.myapplication.FireBase.ItemInfo_Firebase_Model
+import com.example.myapplication.GooglePay.AbstractActivity
+import com.example.myapplication.GooglePay.Payment
+import com.example.myapplication.GooglePay.PaymentData
+import com.example.myapplication.GooglePay.PaymentResult
 import com.example.myapplication.R
 import com.example.myapplication.ShoppingCart.Utils.FireStoreRetrivalUtils
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.wallet.PaymentsClient
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.lyra.sampleandroidgooglepay.payment.AbstractLyraActivity
-import com.lyra.sampleandroidgooglepay.payment.LyraPayment
-import com.lyra.sampleandroidgooglepay.payment.PaymentData
-import com.lyra.sampleandroidgooglepay.payment.PaymentResult
 import kotlinx.android.synthetic.main.shoppingcart.*
 import java.util.*
 
@@ -35,7 +35,8 @@ private const val SUPPORTED_NETWORKS = "AMEX, VISA, MASTERCARD, DISCOVER, JCB"
 
 // Environment TEST or PRODUCTION, refer to documentation for more information
 // FIXME: change by your targeted environment
-private const val PAYMENT_MODE = "TEST"
+private const val TEST_PAYMENT_MODE = "TEST"
+
 
 
 /**
@@ -53,7 +54,7 @@ private const val PAYMENT_MODE = "TEST"
  * @author Lyra Network
  */
 
-class ShoppingCartActivity: AbstractLyraActivity()  {
+class ShoppingCartActivity: AbstractActivity()  {
 
     private lateinit var mAuth: FirebaseAuth
     private var mAuthListener: FirebaseAuth.AuthStateListener? = null
@@ -62,7 +63,6 @@ class ShoppingCartActivity: AbstractLyraActivity()  {
     private var updateAllTotalAmount = 0.0
     private var user : FirebaseUser? = null
     private var email : String? = null
-
     private lateinit var paymentsClient: PaymentsClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,9 +73,9 @@ class ShoppingCartActivity: AbstractLyraActivity()  {
 
 
         // Environment TEST or PRODUCTION
-        paymentsClient = LyraPayment.init(this, PAYMENT_MODE, SUPPORTED_NETWORKS)
+        paymentsClient = Payment.init(this, TEST_PAYMENT_MODE, SUPPORTED_NETWORKS)
 
-        LyraPayment.isPaymentPossible(paymentsClient).addOnCompleteListener { task ->
+        Payment.isPaymentPossible(paymentsClient).addOnCompleteListener { task ->
             try {
                 val result = task.getResult(ApiException::class.java)
                 if (result!!) {
@@ -228,7 +228,7 @@ class ShoppingCartActivity: AbstractLyraActivity()  {
     fun onPayClick(view: View) {
       //  progressBar.visibility = View.VISIBLE
 
-        LyraPayment.execute(createPaymentPayload(), SERVER_URL, GATEWAY_MERCHANT_ID, this, paymentsClient)
+        Payment.execute(createPaymentPayload(), SERVER_URL, GATEWAY_MERCHANT_ID, this, paymentsClient)
     }
 
     /**

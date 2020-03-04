@@ -26,12 +26,12 @@
     <TextView
         android:id="@+id/textview_cartempty"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:text="Your Cart is Empty"
         android:textSize="25sp"
         android:gravity="center"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginVertical="250dp"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_shoppingcart"
+        app:layout_constraintBottom_toTopOf="@+id/constraint_shoppingcart"
         android:visibility="gone"
         />
 

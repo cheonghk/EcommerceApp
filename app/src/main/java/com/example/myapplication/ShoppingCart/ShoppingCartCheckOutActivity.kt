@@ -22,48 +22,27 @@ import java.util.*
 
 
 // Merchant server url
-// FIXME: change by the right payment server
-private const val SERVER_URL = "<REPLACE_ME>"
+private const val SERVER_URL = "<TO_BE_REPLACED>"
 
 // Gateway merchant ID
-// FIXME: change by the right identifier
-private const val GATEWAY_MERCHANT_ID = "<REPLACE_ME>"
+private const val GATEWAY_MERCHANT_ID = "<TO_BE_REPLACED>"
 
-// One or more card networks you support also supported by the Google Pay API
-// FIXME: change by what you can supported
+//Card networks supported
 private const val SUPPORTED_NETWORKS = "AMEX, VISA, MASTERCARD, DISCOVER, JCB"
 
-// Environment TEST or PRODUCTION, refer to documentation for more information
-// FIXME: change by your targeted environment
+// Environment TEST or PRODUCTION
 private const val TEST_PAYMENT_MODE = "TEST"
-
-
-
-/**
- * Main activity
- *
- * This main activity allows to user to fill payment data (amount, order id, so on)
- * Before retrieving these payment data:
- * <li>Initialize payment context with LyraPayment.init(activity: Activity, mode: String, supportedNetworks: String) method</li>
- * <li>Check payment possibility with LyraPayment.isPaymentPossible(paymentsClient: PaymentsClient) method</li>
- * After retrieving these payment data:
- * <li>LyraPayment.execute(payload: JSONObject, serverUrl: String, gatewayMerchantId: String, activity: Activity, paymentsClient: PaymentsClient) is executed</li>.
- * <li>The payment result is handled by handlePaymentResult(result: PaymentResult) method</li>
- *
- * For readability purposes in this example, we do not use logs
- * @author Lyra Network
- */
 
 class ShoppingCartActivity: AbstractActivity()  {
 
     private lateinit var mAuth: FirebaseAuth
-    private var mAuthListener: FirebaseAuth.AuthStateListener? = null
+    private lateinit var mAuthListener: FirebaseAuth.AuthStateListener
     private val mFireBaseCollector = FireBaseCollector()
-    private var adapter :RecyclerviewShoppingCartAdapter? = null
+    private lateinit var adapter :RecyclerviewShoppingCartAdapter
+    private lateinit var paymentsClient: PaymentsClient
     private var updateAllTotalAmount = 0.0
     private var user : FirebaseUser? = null
-    private var email : String? = null
-    private lateinit var paymentsClient: PaymentsClient
+   // private var email : String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,18 +55,18 @@ class ShoppingCartActivity: AbstractActivity()  {
         paymentsClient = Payment.init(this, TEST_PAYMENT_MODE, SUPPORTED_NETWORKS)
 
         Payment.isPaymentPossible(paymentsClient).addOnCompleteListener { task ->
-            try {
+           try {
+            if(task.isSuccessful){
                 val result = task.getResult(ApiException::class.java)
-                if (result!!) {
-                    // show Google Pay as a payment option
-                    //payBtn.visibility = View.VISIBLE
-                } else {
-                    Toast.makeText(this, "isPaymentPossible return false", Toast.LENGTH_LONG).show()
+                //updateUI (result)
+                // show Google Pay as a payment option
+            } else {
+                Log.w("isReadyToPay failed", task.getException())
+                Toast.makeText(this, "isPaymentPossible return false", Toast.LENGTH_LONG).show()
                 }
             } catch (e: ApiException) {
-                Toast.makeText(this, "isPaymentPossible exception catched", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Error, statuscode : ${e.statusCode}", Toast.LENGTH_LONG).show()
             }
-
         }
         }
 
@@ -113,11 +92,11 @@ class ShoppingCartActivity: AbstractActivity()  {
             //val emailVerified = user.isEmailVerified
             val uid = user?.uid
 
-            this.email = email
+           // this.email = email
 
             FireStoreRetrivalUtils.mFirebaseFirestore(uid!!)
                 .get().addOnSuccessListener { userItems ->
-                    if (!userItems!!.isEmpty) {
+                    if (!userItems.isEmpty) {
                         val userItemList = userItems.documents
                         //userShoppingCartList.clear() //prevent repeatedly loading items when activity start
                         for (i in userItemList) {
@@ -222,12 +201,12 @@ class ShoppingCartActivity: AbstractActivity()  {
     }
 
 
-    //**************payment methods************
-
+    //*************************************************
+    //******************Payment Tasks******************
+    //*************************************************
 
     fun onPayClick(view: View) {
       //  progressBar.visibility = View.VISIBLE
-
         Payment.execute(createPaymentPayload(), SERVER_URL, GATEWAY_MERCHANT_ID, this, paymentsClient)
     }
 
@@ -238,17 +217,17 @@ class ShoppingCartActivity: AbstractActivity()  {
      */
     private fun createPaymentPayload(): PaymentData {
         val paymentData = PaymentData()
-        paymentData.setOrderId(random())
+        paymentData.setOrderId(randomOrderID())
+        Log.i("randomOrderID()", "${randomOrderID()}")
         paymentData.setAmount(updateAllTotalAmount.toString())
-        paymentData.setEmail(email)
 
-        // HK's currency code
+        // HK's currency code 344
         paymentData.setCurrency("344")
 
         return paymentData
     }
 
-    override fun handlePaymentResult(result: PaymentResult) {
+    override fun handleNotSuccessPaymentResult(result: PaymentResult) {
         //progressBar.visibility = View.GONE
         if (result.isSuccess()) {
             Toast.makeText(this, "Payment successful", Toast.LENGTH_LONG).show()
@@ -261,11 +240,12 @@ class ShoppingCartActivity: AbstractActivity()  {
         }
     }
 
-    //************payment methods****************
+    fun randomOrderID(): String? {
+        val generator = Random()
+        return (generator.nextInt(900000000) + 100000000).toString()
+    }
+
 
     companion object {const val TAG = "ShoppingCartActivity"
-        fun random(): String? {
-            val generator = Random()
-            return (generator.nextInt(20) + 32).toString()
-        }
+
 }}

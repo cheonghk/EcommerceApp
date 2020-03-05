@@ -8,12 +8,10 @@ import com.google.android.gms.wallet.PaymentData
 
 
 abstract class AbstractActivity: AppCompatActivity() {
-    /**
+    /*
      * Handle payment result
-     *
-     * @param result PaymentResult
      */
-    abstract fun handlePaymentResult(result: PaymentResult)
+    abstract fun handleNotSuccessPaymentResult(result: PaymentResult)
 
     /**
      * Allow to retrieve to payment status

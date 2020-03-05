@@ -7,9 +7,6 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.util.*
 
-/**
- * Google Pay Management
- */
 object GooglePayManagement {
 
     // Technical code used for specifying the result of WebView activity
@@ -78,24 +75,21 @@ object GooglePayManagement {
      * That uses getAllowedCardAuthMethods, getAllowedCardNetworks methods and maybe some additional parameters
      */
     private fun getBaseCardPaymentMethod(
-        additionalParams: JSONObject?,
+        additionalInfo: JSONObject?,
         getGatewayTokenizationSpecification: JSONObject?
     ): JSONObject {
+
+        //base info
         val params = JSONObject()
             .put("allowedAuthMethods", getAllowedCardAuthMethods())
             .put("allowedCardNetworks", getAllowedCardNetworks())
-        /*.put("billingAddressRequired", true)
-    val billingAddressParameters = JSONObject()
-    billingAddressParameters.put("format", "FULL")
-    params.put("billingAddressParameters", billingAddressParameters)*/
 
-
-        // Additional parameters provided?
-        if (additionalParams != null && additionalParams.length() > 0) {
-            val keys = additionalParams.keys()
+        // Additional provided?
+        if (additionalInfo != null && additionalInfo.length() > 0) {
+            val keys = additionalInfo.keys()
             while (keys.hasNext()) {
                 val key = keys.next()
-                params.put(key, additionalParams.get(key))
+                params.put(key, additionalInfo.get(key))
             }
         }
 
@@ -131,13 +125,14 @@ object GooglePayManagement {
     /**
      * Creating an IsReadyToPayRequest object to prepare ready Request
      */
-    private fun getIsReadyToPayRequest(): IsReadyToPayRequest {
+    private fun getIsReadyToPayRequest(): JSONObject {
             val isReadyToPayRequest = getBaseRequest()
             isReadyToPayRequest.put(
                 "allowedPaymentMethods", JSONArray()
                     .put(getBaseCardPaymentMethod(null, null))
             )
-            return IsReadyToPayRequest.fromJson(isReadyToPayRequest.toString())
+        return isReadyToPayRequest
+           // return IsReadyToPayRequest.fromJson(isReadyToPayRequest.toString())
         }
 
 
@@ -149,7 +144,7 @@ object GooglePayManagement {
         gatewayMerchantId: String
     ): PaymentDataRequest {
         val paymentDataRequestJson = getBaseRequest()
-        val additionalParams = JSONObject()
+        val additionalInfo = JSONObject()
 
         val transactionJson = JSONObject()
         transactionJson
@@ -157,12 +152,13 @@ object GooglePayManagement {
             .put("totalPrice", price)
             .put("currencyCode", currency)
 
-        additionalParams.put("billingAddressRequired", true)
+        additionalInfo.put("billingAddressRequired", true)
 
-        additionalParams
+        additionalInfo
             .put(
                 "billingAddressParameters", JSONObject()
-                    .put("format", "FULL").put("phoneNumberRequired", false)
+                    .put("format", "FULL") //require full billing address
+                    .put("phoneNumberRequired", false)
             )
 
         paymentDataRequestJson
@@ -170,7 +166,7 @@ object GooglePayManagement {
                 "allowedPaymentMethods", JSONArray()
                     .put(
                         getBaseCardPaymentMethod(
-                            additionalParams,
+                            additionalInfo,
                             getGatewayTokenizationSpecification(gatewayMerchantId)
                         )
                     )
@@ -178,7 +174,6 @@ object GooglePayManagement {
 
         paymentDataRequestJson.put("shippingAddressRequired", true)
         paymentDataRequestJson.put("emailRequired", true)
-
         paymentDataRequestJson.put("transactionInfo", transactionJson)
 
         return PaymentDataRequest.fromJson(paymentDataRequestJson.toString())
@@ -186,25 +181,23 @@ object GooglePayManagement {
 
     /**
      * Initializes payments client
-     *
-     * @param activity Activity
-     * @param mode String
-     * @param supportedNetworks String
      */
+
     internal fun init(activity: Activity, mode: String, supportedNetworks: String): PaymentsClient {
         this.supportedNetworks = supportedNetworks.split(Regex(",[ ]*")).toTypedArray()
         return createPaymentsClient(activity, mode)
     }
 
     /**
-     * Determines if Google Pay is available
+     * Check if Google Pay is available
      *
-     * @param paymentsClient PaymentsClient
+     * @param mPaymentsClient PaymentsClient
      * @return Task<Boolean>
      */
-    internal fun isPossible(paymentsClient: PaymentsClient): Task<Boolean> {
+    internal fun isPossible(mPaymentsClient: PaymentsClient): Task<Boolean> {
         val isReadyToPayRequest = getIsReadyToPayRequest()
-        return paymentsClient.isReadyToPay(isReadyToPayRequest)
+        val request  = IsReadyToPayRequest.fromJson(isReadyToPayRequest.toString())
+        return mPaymentsClient.isReadyToPay(request)
     }
 
     /**
@@ -215,7 +208,7 @@ object GooglePayManagement {
      * @param mode String
      * @param gatewayMerchantId String
      * @param activity Activity
-     * @param paymentsClient PaymentsClient
+     * @param mPaymentsClient PaymentsClient
      */
     internal fun execute(
         amount: String?,
@@ -223,7 +216,7 @@ object GooglePayManagement {
         mode: String?,
         gatewayMerchantId: String,
         activity: Activity,
-        paymentsClient: PaymentsClient
+        mPaymentsClient: PaymentsClient
     ) {
         if (amount == null) {
             Payment.returnsResult(
@@ -257,7 +250,7 @@ object GooglePayManagement {
 
         val paymentDataRequest = preparePaymentDataRequest(amount, currency, gatewayMerchantId)
         AutoResolveHelper.resolveTask(
-            paymentsClient.loadPaymentData(paymentDataRequest),
+            mPaymentsClient.loadPaymentData(paymentDataRequest),
             activity,
             GOOGLE_PAYMENT_CODE_RESULT
         )

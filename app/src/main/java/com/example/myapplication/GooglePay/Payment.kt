@@ -93,7 +93,7 @@ private const val CONNECTION_TIMEOUT = 15000
  */
 object Payment {
     private lateinit var serverUrl: String
-    lateinit var mode: String
+    private lateinit var mode: String
     private lateinit var payload: JSONObject
 
     /**
@@ -230,14 +230,14 @@ object Payment {
     }
 
     /**
-     * Returns payment result to main activity
+     * Returns payment result to ShoppingCartActivity
      *
      * @param value Boolean
      * @param errorCode Int?
      * @param cause String?
      */
     fun returnsResult(value: Boolean, errorCode: Int?, cause: String?, activity: Activity) {
-        (activity as AbstractActivity).handlePaymentResult(constructPaymentResult(value, errorCode, cause))
+        (activity as AbstractActivity).handleNotSuccessPaymentResult(constructPaymentResult(value, errorCode, cause))
     }
 
     /**
